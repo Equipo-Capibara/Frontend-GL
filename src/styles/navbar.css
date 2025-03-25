@@ -1,0 +1,46 @@
+.nav-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-bottom: 1px solid lightgray;
+    padding: 10px 0;
+    height: 80px;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.nav-top img {
+    margin-left: 30px;
+    height: 100%;
+    max-height: 80px;
+    object-fit: contain; /* Evita deformaciones */
+}
+
+p{
+    color: white;
+    font-size: 25px;
+}
+
+.nav-top .contain-user {
+    max-width: 250px;
+    display: grid;
+    grid-template-columns: 80% 20%;
+    background: #060606DD;
+    margin-right: 80px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    height: 80px;
+    justify-self: end;
+}
+.nav-top .contain-user p {
+    background: transparent;
+    text-align: end;
+}
+.nav-top .contain-user img {
+    margin-left: 15px;
+}
+
+.nav-top .contain-user:hover {
+    transform: scale(1.1);
+}
