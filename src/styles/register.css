@@ -1,3 +1,8 @@
+.contain {
+    width: 100%;
+    padding-top: 30vh;
+}
+
 .register {
     background: rgba(0, 0, 0, 0.8);
     padding: 2rem;
@@ -7,12 +12,11 @@
     align-items: center;
     justify-content: center;
     max-width: 400px;
-    margin: auto;
-    margin-top: 10vh;
+    margin: 0 auto;
 }
 
-h2 {
-    font-size: 2rem;
+.register p {
+    font-size: 1.2rem;
 }
 
 input {
@@ -22,6 +26,7 @@ input {
     border-radius: 5px;
     border: none;
     text-align: center;
+    font-family: "Tektur", sans-serif;
 }
 
 button {
@@ -33,6 +38,7 @@ button {
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s;
+    font-family: "Tektur", sans-serif;
 }
 
 button:hover {
