@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from "react-route
 import Home from './components/Home';
 import Register from './components/Register';
 import NavBar from "./components/NavBar";
+import RoomScreen from "./components/roomScreen";
 import './styles/app.css';
 
 const Layout = () => {
@@ -16,18 +17,20 @@ const Layout = () => {
             <Routes>
                 <Route path="/" element={<Register />} />
                 <Route path="/home" element={<Home />} />
+                <Route path="/room" element={<RoomScreen />} />
             </Routes>
         </>
     );
 };
+
 
 function App() {
   return (
       <Router>
           <Layout />
       </Router>
+
   );
 }
 
 export default App;
-

@@ -14,7 +14,7 @@ function Home() {
     return (
         <div className="home" style={homeStyle}>
             <nav>
-                <Link to="/register">Iniciar Partida</Link>
+                <Link to="/room">Iniciar Partida</Link>
                 <Link to="/join">Unirse a Sala</Link>
                 <Link to="/options">Opciones</Link>
                 <Link to="/notes">Notas de la Versión</Link>
