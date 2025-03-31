@@ -3,6 +3,7 @@ import Home from './components/Home';
 import Register from './components/Register';
 import NavBar from "./components/NavBar";
 import './styles/app.css';
+import RegisterCode from "./components/RegisterCode";
 
 const Layout = () => {
     const location = useLocation();
@@ -16,6 +17,7 @@ const Layout = () => {
             <Routes>
                 <Route path="/" element={<Register />} />
                 <Route path="/home" element={<Home />} />
+                <Route path="/join" element={<RegisterCode />} />
             </Routes>
         </>
     );
