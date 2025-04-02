@@ -17,22 +17,31 @@ function RegisterCode() {
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        const value = e.target.value;
-        if (/^\d{0,6}$/.test(value)) {
+        const value = e.target.value.toUpperCase(); // Convertir a mayúsculas
+        if (/^[A-Z0-9]{0,6}$/.test(value)) {
             setCode(value);
             setError('');
         } else {
-            setError('El codigo debe ser un número de 6 cifras.');
+            setError('El código debe contener solo letras y números (máx. 6 caracteres).');
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (code.length === 6) {
-            localStorage.setItem('roomCode', code);
-            window.dispatchEvent(new Event("storage"));
-            navigate('/home');
+            try {
+                const response = await fetch(`http://localhost:3000/api/room/${code}`);
+                if (response.ok) {
+                    localStorage.setItem('roomCode', code);
+                    window.dispatchEvent(new Event("storage"));
+                    navigate(`/room/${code}`);
+                } else {
+                    setError("El código de sala no es válido.");
+                }
+            } catch (error) {
+                setError("Error al conectar con el servidor.");
+            }
         } else {
-            setError('El codigo debe tener exactamente 6 cifras.');
+            setError("El código debe tener exactamente 6 caracteres.");
         }
     };
 

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from "react-route
 import Home from './components/Home';
 import Register from './components/Register';
 import NavBar from "./components/NavBar";
+import RoomScreen from "./components/roomScreen";
 import './styles/app.css';
 import RegisterCode from "./components/RegisterCode";
 
@@ -17,6 +18,7 @@ const Layout = () => {
             <Routes>
                 <Route path="/" element={<Register />} />
                 <Route path="/home" element={<Home />} />
+                <Route path="/room/:roomId" element={<RoomScreen />} />
                 <Route path="/join" element={<RegisterCode />} />
             </Routes>
         </>
