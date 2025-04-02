@@ -18,7 +18,7 @@ const Layout = () => {
             <Routes>
                 <Route path="/" element={<Register />} />
                 <Route path="/home" element={<Home />} />
-                <Route path="/room" element={<RoomScreen />} />
+                <Route path="/room/:roomId" element={<RoomScreen />} />
                 <Route path="/join" element={<RegisterCode />} />
             </Routes>
         </>

@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { createRoom } from "../websocket";
 import fondoHome from "../resources/fondo_home.png";
 import '../styles/home.css';
 
@@ -11,10 +12,29 @@ const homeStyle = {
 };
 
 function Home() {
+    const navigate = useNavigate();
+
+    const handleCreateRoom = () => {
+        const hostId = localStorage.getItem("playerName");
+        if (!hostId) {
+            console.error("No se ha encontrado un jugador válido");
+            return;
+        }
+
+        // Llamada a una función para crear la sala en el backend o WebSocket
+        createRoom(hostId, (room) => {
+            if (room && room.code) {
+                navigate(`/room/${room.code}`); // Redirige a la sala creada usando el roomId
+            } else {
+                console.error("Error al crear la sala o roomId no encontrado");
+            }
+        });
+    };
+
     return (
         <div className="home" style={homeStyle}>
             <nav>
-                <Link to="/room">Iniciar Partida</Link>
+                <button onClick={handleCreateRoom}>Iniciar Partida</button>
                 <Link to="/join">Unirse a Sala</Link>
                 <Link to="/options">Opciones</Link>
                 <Link to="/notes">Notas de la Versión</Link>
