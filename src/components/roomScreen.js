@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import CharacterCard from "./characterCard";
 import fondo from "../resources/fondo_home.png";
-import stone from "../resources/stone.png";
-import brisa from "../resources/brisa.png";
-import aqua from "../resources/aqua.png";
-import flame from "../resources/flame.png";
+import stone from "../resources/banner_stone.png";
+import brisa from "../resources/banner_brisa.png";
+import aqua from "../resources/banner_aqua.png";
+import flame from "../resources/banner_flame.png";
 import '../styles/roomScreen.css';
 import stompClient from "../websocket";
 
@@ -41,6 +41,7 @@ export default function RoomScreen() {
 
     function subscribeToRoom() {
         if (!stompClient?.connected) return;
+
 
         stompClient.subscribe(`/topic/room/${roomId}/join-alert`, (message) => {
             const { username } = JSON.parse(message.body);
