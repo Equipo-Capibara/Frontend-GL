@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import Tile from "./Tile";
-import { getGameState, movePlayer, buildBlock  } from "../api/gameApi";
+import { getGameState, movePlayer, buildBlock, destroyBlock } from "../api/gameApi";
 import "../styles/gameBoard.css";
 
 const GameBoard = () => {
@@ -49,7 +49,15 @@ const GameBoard = () => {
                 } catch (error) {
                     console.error("Error al construir el bloque:", error);
                 }
-            }
+            } else if (key === "x") {
+                  try {
+                      const updatedBoard = await destroyBlock(); // llama al back para destruir el bloque
+                      setBoard(updatedBoard); // actualiza el tablero
+                  } catch (error) {
+                      console.error("Error al destruir el bloque:", error);
+                  }
+              }
+
         };
 
         window.addEventListener("keydown", handleKeyDown);
