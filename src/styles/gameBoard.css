@@ -1,0 +1,37 @@
+body {
+    margin: 0;
+    overflow: hidden; /* quita scrolls */
+}
+
+.game-wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #111;
+    position: relative;
+}
+
+.game-board {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.board-row {
+    display: flex;
+}
+
+.tile {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+}
+
+.player-sprite {
+    position: absolute;
+    transition: transform 0.1s linear;
+    pointer-events: none;
+    z-index: 10;
+}
