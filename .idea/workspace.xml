@@ -5,14 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="48a408d3-22cf-42a0-a2f5-659f97269b71" name="Changes" comment="feat: add room screen but need some fix and connect back">
+      <change afterPath="$PROJECT_DIR$/src/api/gameApi.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Block.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Character.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Door.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/GameBoard.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Key.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Tile.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/styles/tile.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_25_03_2025_5_35_p__m___Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_25_03_2025_5_35_p_ m__[Changes]/shelved.patch" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Home.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Home.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/RegisterCode.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/RegisterCode.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/roomScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/roomScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/styles/roomScreen.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/roomScreen.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/resources/aqua.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/resources/banner_aqua.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/resources/brisa.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/resources/banner_brisa.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/resources/flame.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/resources/banner_flame.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/resources/stone.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/resources/banner_stone.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/websocket.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocket.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,32 +60,43 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "dev__andrea",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/andre/OneDrive/Escritorio/ARSW/Backend-GL",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev__cesar&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/andre/OneDrive/Escritorio/ARSW/Backend-GL&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\WebStorm 2024.3.5\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\andre\OneDrive\Escritorio\ARSW\Frontend-GL\src\resources" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\PC SISTEM\Documents\Septimo_Semestre\ARSW\EquipoCapibara\Frontend-GL\public\resources" />
+      <recent name="C:\Users\PC SISTEM\Documents\Septimo_Semestre\ARSW\EquipoCapibara\Frontend-GL\src\resources" />
       <recent name="C:\Users\andre\OneDrive\Escritorio\ARSW\Frontend-GL\src\styles" />
       <recent name="C:\Users\andre\OneDrive\Escritorio\ARSW\Frontend-GL\src\components" />
     </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-WS-243.26053.12" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -86,6 +110,9 @@
       <workItem from="1742942057284" duration="11205000" />
       <workItem from="1743469103966" duration="1156000" />
       <workItem from="1743520770772" duration="10280000" />
+      <workItem from="1743776907273" duration="226000" />
+      <workItem from="1743777242876" duration="6441000" />
+      <workItem from="1743792220117" duration="23559000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />

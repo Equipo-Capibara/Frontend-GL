@@ -24,7 +24,7 @@ stompClient.activate();
  * @param {string} hostId - ID del jugador que crea la sala.
  * @param {function} callback - Función que recibe la sala creada.
  */
-export function createRoom(hostId, callback) {
+export function     createRoom(hostId, callback) {
     fetch("http://localhost:8080/api/room/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

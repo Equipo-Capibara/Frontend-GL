@@ -3,8 +3,9 @@ import Home from './components/Home';
 import Register from './components/Register';
 import NavBar from "./components/NavBar";
 import RoomScreen from "./components/roomScreen";
-import './styles/app.css';
 import RegisterCode from "./components/RegisterCode";
+import GameBoard from "./components/GameBoard";
+import './styles/app.css';
 
 const Layout = () => {
     const location = useLocation();
@@ -20,6 +21,7 @@ const Layout = () => {
                 <Route path="/home" element={<Home />} />
                 <Route path="/room/:roomId" element={<RoomScreen />} />
                 <Route path="/join" element={<RegisterCode />} />
+                <Route path="/game" element={<GameBoard />} />
             </Routes>
         </>
     );
