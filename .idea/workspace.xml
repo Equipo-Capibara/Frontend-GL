@@ -4,15 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="48a408d3-22cf-42a0-a2f5-659f97269b71" name="Changes" comment="feat: add room screen but need some fix and connect back">
+    <list default="true" id="48a408d3-22cf-42a0-a2f5-659f97269b71" name="Changes" comment="feat: connect websockets to registercode and roomscreen">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_25_03_2025_5_35_p__m___Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_25_03_2025_5_35_p_ m__[Changes]/shelved.patch" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Home.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Home.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/RegisterCode.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/RegisterCode.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Register.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Register.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/roomScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/roomScreen.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/styles/roomScreen.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/roomScreen.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/websocket.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocket.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,6 +63,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2023.2.2\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -70,6 +72,7 @@
       <recent name="C:\Users\andre\OneDrive\Escritorio\ARSW\Frontend-GL\src\resources" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\andre\OneDrive\Escritorio\ARSW\Frontend-GL\src\resources" />
       <recent name="C:\Users\andre\OneDrive\Escritorio\ARSW\Frontend-GL\src\styles" />
       <recent name="C:\Users\andre\OneDrive\Escritorio\ARSW\Frontend-GL\src\components" />
     </key>
@@ -85,7 +88,8 @@
       <workItem from="1742776032356" duration="3357000" />
       <workItem from="1742942057284" duration="11205000" />
       <workItem from="1743469103966" duration="1156000" />
-      <workItem from="1743520770772" duration="10280000" />
+      <workItem from="1743520770772" duration="10634000" />
+      <workItem from="1743715606674" duration="42630000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -103,7 +107,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743113918614</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feat: connect websockets to registercode and roomscreen">
+      <option name="closed" value="true" />
+      <created>1743570386313</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1743570386313</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -112,6 +124,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="feat: add room screen but need some fix and connect back" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: add room screen but need some fix and connect back" />
+    <MESSAGE value="feat: connect websockets to registercode and roomscreen" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: connect websockets to registercode and roomscreen" />
   </component>
 </project>

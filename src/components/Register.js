@@ -26,11 +26,30 @@ function Register() {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (name.length >= 3 && name.length <= 15) {
-            localStorage.setItem('playerName', name);
-            window.dispatchEvent(new Event("storage"));
-            navigate('/home');
+            try {
+                // Usando fetch para crear el jugador en el backend
+                const response = await fetch('http://localhost:8080/game/createPlayer?name=' + name, {
+                    method: 'POST',
+                });
+
+                if (!response.ok) {
+                    throw new Error('Hubo un problema al crear el jugador');
+                }
+
+                const player = await response.json();
+
+                localStorage.setItem('playerId', player.id);
+                localStorage.setItem('playerName', player.name);
+
+                window.dispatchEvent(new Event("storage"));
+                navigate('/home');
+            } catch (error) {
+                // Manejo de errores
+                setError(error.message);
+                console.error(error);
+            }
         } else {
             setError('El nombre debe tener entre 3 y 15 caracteres.');
         }
