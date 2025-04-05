@@ -20,3 +20,12 @@ export const buildBlock = async (direction) => {
     return await response.json();
 };
 
+// Función para destruir un bloque
+export const destroyBlock = async () => {
+    const response = await fetch(`${BASE_URL}/destroy`, {
+        method: "POST",
+    });
+    return await response.json();
+};
+
+
