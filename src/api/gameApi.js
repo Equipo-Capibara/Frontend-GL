@@ -11,3 +11,12 @@ export const movePlayer = async (direction) => {
     });
     return await response.json();
 };
+
+// Función para construir un bloque en una dirección específica
+export const buildBlock = async (direction) => {
+    const response = await fetch(`${BASE_URL}/build?direction=${direction}`, {
+        method: "POST",
+    });
+    return await response.json();
+};
+
