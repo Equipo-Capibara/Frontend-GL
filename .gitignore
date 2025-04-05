@@ -41,3 +41,5 @@ replay_pid*
 .env.test.local
 .env.production.local
 
+#github
+.idea
