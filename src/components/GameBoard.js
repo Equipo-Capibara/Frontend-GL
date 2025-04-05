@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import Tile from "./Tile";
-import { getGameState, movePlayer } from "../api/gameApi";
+import { getGameState, movePlayer, buildBlock  } from "../api/gameApi";
 import "../styles/gameBoard.css";
 
 const GameBoard = () => {
@@ -25,20 +25,30 @@ const GameBoard = () => {
     useEffect(() => {
         const handleKeyDown = async (e) => {
             const key = e.key.toLowerCase();
-            if (!["w", "a", "s", "d"].includes(key) || isMoving) return;
 
-            setIsMoving(true);
-            try {
-                const updatedBoard = await movePlayer(key);
-                setBoard(updatedBoard);
+            if (isMoving) return;
 
-                if (updatedBoard.player) {
-                    setPlayerPos({ x: updatedBoard.player.x, y: updatedBoard.player.y });
+            if (["w", "a", "s", "d"].includes(key)) {
+                setIsMoving(true);
+                try {
+                    const updatedBoard = await movePlayer(key);
+                    setBoard(updatedBoard);
+
+                    if (updatedBoard.player) {
+                        setPlayerPos({ x: updatedBoard.player.x, y: updatedBoard.player.y });
+                    }
+                } catch (error) {
+                    console.error("Error al mover el personaje:", error);
+                } finally {
+                    setTimeout(() => setIsMoving(false), 80);
                 }
-            } catch (error) {
-                console.error("Error al mover el personaje:", error);
-            } finally {
-                setTimeout(() => setIsMoving(false), 80);
+            } else if (key === "z") {
+                try {
+                    const updatedBoard = await buildBlock(); // llama al back para crear el bloque
+                    setBoard(updatedBoard); // actualiza el tablero
+                } catch (error) {
+                    console.error("Error al construir el bloque:", error);
+                }
             }
         };
 
