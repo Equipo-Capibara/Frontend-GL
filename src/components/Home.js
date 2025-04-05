@@ -15,16 +15,16 @@ function Home() {
     const navigate = useNavigate();
 
     const handleCreateRoom = () => {
-        const hostId = localStorage.getItem("playerName");
+        const hostId = localStorage.getItem("playerId");
+        console.log("id", localStorage.getItem("playerId"));
         if (!hostId) {
             console.error("No se ha encontrado un jugador válido");
             return;
         }
 
-        // Llamada a una función para crear la sala en el backend o WebSocket
         createRoom(hostId, (room) => {
             if (room && room.code) {
-                navigate(`/room/${room.code}`); // Redirige a la sala creada usando el roomId
+                navigate(`/room/${room.code}`);
             } else {
                 console.error("Error al crear la sala o roomId no encontrado");
             }
