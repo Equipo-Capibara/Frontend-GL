@@ -13,7 +13,7 @@ nav {
     width: 70%;
 }
 
-nav a {
+nav a, nav button {
     font-size: 1.5rem;
     text-decoration: none;
     background: rgba(0, 0, 0, 0.7);
@@ -22,6 +22,7 @@ nav a {
     color: white;
 }
 
-nav a:hover {
+nav a:hover, nav button:hover {
     padding-left: 20px;
+    background: darkorange;
 }

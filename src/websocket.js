@@ -9,11 +9,11 @@ const stompClient = new Client({
 });
 
 stompClient.onConnect = () => {
-    console.log("✅ Conectado a WebSocket");
+    console.log("Conectado a WebSocket");
 };
 
 stompClient.onStompError = (error) => {
-    console.error("❌ Error en WebSocket:", error);
+    console.error("Error en WebSocket:", error);
 };
 
 stompClient.activate();
@@ -54,7 +54,7 @@ export const createRoom = async (hostId, callback) => {
  */
 export function joinRoom(roomCode, username, playerId) {
     if (!stompClient.connected) {
-        console.error("🚨 WebSocket no está conectado aún");
+        console.error("WebSocket no está conectado aún");
         return;
     }
 
@@ -63,7 +63,7 @@ export function joinRoom(roomCode, username, playerId) {
         body: JSON.stringify({ username, playerId })
     });
 
-    console.log(`📤 Enviado: ${username} (${playerId}) se unió a la sala ${roomCode}`);
+    console.log(`Enviado: ${username} (${playerId}) se unió a la sala ${roomCode}`);
 }
 
 export default stompClient;
