@@ -36,7 +36,7 @@ function Home() {
             <nav>
                 <button onClick={handleCreateRoom}>Iniciar Partida</button>
                 <Link to="/join">Unirse a Sala</Link>
-                <Link to="/game">Opciones</Link>
+                <Link to="/opciones">Opciones</Link>
                 <Link to="/notes">Notas de la Versión</Link>
                 <Link to="/characters">Personajes</Link>
             </nav>

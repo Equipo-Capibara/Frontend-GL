@@ -163,8 +163,10 @@
 }
 
 .ready-label {
+    display: block;
+    margin-top: 10px;
     font-weight: bold;
-    color: #00c853;
-    margin-top: 0.5rem;
-    font-size: 1rem;
+    font-size: 1.1em;
+    color: #00ffcc;
+    text-align: center;
 }

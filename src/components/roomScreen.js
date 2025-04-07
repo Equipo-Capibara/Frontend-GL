@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect, useRef} from "react";
 import { useParams } from "react-router-dom";
 import CharacterCard from "./characterCard";
 import fondo from "../resources/fondo_home.png";
@@ -23,21 +23,26 @@ export default function RoomScreen() {
     const [selectedCharacters, setSelectedCharacters] = useState([]);
     const [alerts, setAlerts] = useState([]);
     const [isCharacterTaken, setIsCharacterTaken] = useState(false);
+    const [isWaiting, setIsWaiting] = useState(false);
+    const allPlayersReady = selectedCharacters.length === 4 && selectedCharacters.every(p => p.characterSelected);
+
+    const hasSubscribed = useRef(false);
 
     useEffect(() => {
-        if (!stompClient || !roomId) return;
+        if (!stompClient || !roomId || hasSubscribed.current) return;
 
         const checkConnection = setInterval(() => {
             if (stompClient.connected) {
                 console.log("✅ WebSocket conectado, suscribiéndose...");
                 subscribeToRoom();
                 sendJoinAlert();
+                hasSubscribed.current = true;
                 clearInterval(checkConnection);
             }
         }, 500);
 
         return () => clearInterval(checkConnection);
-    }, [stompClient?.connected, roomId]);
+    }, [stompClient, roomId]);
 
     function subscribeToRoom() {
         if (!stompClient?.connected) return;
@@ -64,10 +69,24 @@ export default function RoomScreen() {
             handlePlayersUpdate(JSON.parse(message.body));
         });
 
-        stompClient.subscribe("/topic/room/" + roomId + "/confirm", (message) => {
-            console.log("Mensaje recibido:", message.body); // Este debería mostrar los mensajes recibidos
+        stompClient.subscribe(`/topic/room/${roomId}/confirm`, (message) => {
+            if (message.body) {
+                const updatedCharacters = JSON.parse(message.body);
+                const myId = localStorage.getItem("playerId");
 
+                // Fusionamos el estado anterior para preservar mi "characterSelected"
+                setSelectedCharacters(prev =>
+                    updatedCharacters.map(player => {
+                        const prevPlayer = prev.find(p => p.id === player.id);
+                        if (player.id === myId && prevPlayer?.characterSelected) {
+                            return { ...player, characterSelected: true };
+                        }
+                        return player;
+                    })
+                );
+            }
         });
+
     }
 
     function updateCharacterSlots(players) {
@@ -106,12 +125,13 @@ export default function RoomScreen() {
 
 
     const CharacterCardSelector = ({ character, currentCharacterIndex, onNext, onPrev, player }) => {
+        const isReady = player?.characterSelected; // 👈 Usamos directamente el estado de ese jugador
+
         return (
             <div className="player-slot selector-slot">
-                {/* Mostramos la tarjeta tal como la ven los demás */}
                 <CharacterCard character={character} player={player} />
 
-                {player.characterSelected ? (
+                {isReady ? (
                     <span className="ready-label">✅ Listo</span>
                 ) : (
                     <div className="navigation-buttons">
@@ -156,7 +176,6 @@ export default function RoomScreen() {
         const myPlayer = selectedCharacters.find(p => p.id === myId);
         if (!myPlayer) return;
 
-        // Verificamos si el personaje ya ha sido seleccionado por otro jugador
         const sameCharacterUsed = selectedCharacters.some(p =>
             p.id !== myId &&
             p.character === myPlayer.character &&
@@ -165,24 +184,23 @@ export default function RoomScreen() {
 
         if (sameCharacterUsed) {
             alert("Este personaje ya fue elegido por otro jugador.");
-            setIsCharacterTaken(true); // Deshabilita el botón si el personaje está ocupado
+            setIsCharacterTaken(true);
             return;
         }
 
-        setIsCharacterTaken(false); // Habilita el botón si el personaje está disponible
+        setIsCharacterTaken(false);
+        setIsWaiting(true); // Cambia el estado a esperando...
 
-        // Publicamos la selección al servidor a través de WebSocket
-        const selectedCharacterId = myPlayer.character; // ID del personaje seleccionado
         stompClient.publish({
-            destination: `/api/room/confirmCharacterSelection`, // Dirección en el servidor
+            destination: `/app/confirmCharacterSelection`,
             body: JSON.stringify({
                 roomCode: roomId,
                 playerId: myId,
-                characterId: selectedCharacterId
+                characterId: myPlayer.character
             })
         });
 
-        // Opcionalmente, actualiza el estado local para reflejar que el jugador ha confirmado su elección
+        // Opcionalmente actualiza el estado local antes de que llegue confirmación real
         setSelectedCharacters(prev =>
             prev.map(p =>
                 p.id === myId ? { ...p, characterSelected: true } : p
@@ -190,17 +208,15 @@ export default function RoomScreen() {
         );
     };
 
-// Función para manejar la respuesta del servidor sobre la confirmación del personaje
-    const handleCharacterSelectionConfirmation = (message) => {
-        console.log("Mensaje recibido:", message);
-        const { playerId, characterId, success, allPlayers } = JSON.parse(message.body);
-        console.log( allPlayers);
+    // Función para manejar la respuesta del servidor sobre la confirmación del personaje
+    const handleCharacterSelectionConfirmation = ({ playerId, characterId, success, allPlayers }) => {
         if (success) {
-            // Actualiza todos los jugadores con los nuevos datos
             setSelectedCharacters(allPlayers);
+            setIsWaiting(false);
         } else {
             alert("Hubo un problema al seleccionar este personaje. Intenta con otro.");
-            setIsCharacterTaken(true); // Deshabilitamos el botón si no es exitoso
+            setIsCharacterTaken(true);
+            setIsWaiting(false);
         }
     };
 
@@ -252,14 +268,16 @@ export default function RoomScreen() {
                                                 currentCharacterIndex={currentCharacterIndex}
                                                 onNext={nextCharacter}
                                                 onPrev={prevCharacter}
-                                                player={`J${index + 1}`}
+                                                player={player}
                                             />
                                         ) : (
-                                            <CharacterCard
-                                                key={player.id}
-                                                character={characters.find(char => char.id === Number(player.character))}
-                                                player={`J${index + 1}`}
-                                            />
+                                            <div className="player-slot">
+                                                <CharacterCard
+                                                    character={characters.find(char => char.id === Number(player.character))}
+                                                    player={player}
+                                                />
+                                                {player.characterSelected && <span className="ready-label">✅ Listo</span>}
+                                            </div>
                                         );
                                     } else {
                                         return (
@@ -276,7 +294,13 @@ export default function RoomScreen() {
                 })()}
 
                 <div className="footer">
-                    <button className="confirm-button" onClick={confirmSelection} disabled={isCharacterTaken}>Confirmar elección</button>
+                    <button
+                        className="confirm-button"
+                        onClick={confirmSelection}
+                        disabled={isCharacterTaken || isWaiting}
+                    >
+                        {isWaiting ? "Esperando..." : "Confirmar elección"}
+                    </button>
                     <span className="player-count">Jugadores {selectedCharacters.length}/4</span>
 
                     <button className="start-button" disabled={selectedCharacters.length < 4}>
