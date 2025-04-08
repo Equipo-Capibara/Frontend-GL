@@ -20,8 +20,8 @@ const Layout = () => {
                 <Route path="/" element={<Register />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/room/:roomId" element={<RoomScreen />} />
+                <Route path="/game/:roomId" element={<GameBoard />} />
                 <Route path="/join" element={<RegisterCode />} />
-                <Route path="/game" element={<GameBoard />} />
             </Routes>
         </>
     );

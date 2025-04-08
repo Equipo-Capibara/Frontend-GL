@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useParams } from "react-router-dom";
 import Tile from "./Tile";
 import { getGameState, movePlayer, buildBlock, destroyBlock } from "../api/gameApi";
 import "../styles/gameBoard.css";
 
 const GameBoard = () => {
+    const { roomId } = useParams();
     const [board, setBoard] = useState(null);
     const [playerPos, setPlayerPos] = useState(null);
     const [isMoving, setIsMoving] = useState(false);
@@ -11,7 +13,7 @@ const GameBoard = () => {
 
     useEffect(() => {
         const fetchBoard = async () => {
-            const data = await getGameState();
+            const data = await getGameState(roomId);
             setBoard(data);
 
             if (data.player) {

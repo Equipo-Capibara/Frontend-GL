@@ -87,6 +87,17 @@ export default function RoomScreen() {
             }
         });
 
+        stompClient.subscribe(`/topic/room/${roomId}/start`, (message) => {
+            console.log("🚀 Juego iniciado");
+            const { gameState } = JSON.parse(message.body);
+
+            // Puedes guardar el gameState si es necesario
+            localStorage.setItem("gameState", JSON.stringify(gameState));
+
+            // Redirigir a la pantalla de juego
+            window.location.href = `/game/${roomId}`;
+        });
+
     }
 
     function updateCharacterSlots(players) {
@@ -166,6 +177,18 @@ export default function RoomScreen() {
             body: JSON.stringify({
                 playerId: playerId,
                 character: selectedChar.id
+            })
+        });
+    };
+
+    const startGame = () => {
+        if (!stompClient?.connected) return;
+
+        stompClient.publish({
+            destination: `/app/room/${roomId}/start`,
+            body: JSON.stringify({
+                roomId: roomId,
+                players: selectedCharacters
             })
         });
     };
@@ -303,7 +326,11 @@ export default function RoomScreen() {
                     </button>
                     <span className="player-count">Jugadores {selectedCharacters.length}/4</span>
 
-                    <button className="start-button" disabled={selectedCharacters.length < 4}>
+                    <button
+                        className="start-button"
+                        disabled={!allPlayersReady}
+                        onClick={startGame}
+                    >
                         Iniciar Partida
                     </button>
                 </div>
