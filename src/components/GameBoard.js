@@ -5,20 +5,17 @@ import { getGameState, movePlayer, buildBlock, destroyBlock } from "../api/gameA
 import "../styles/gameBoard.css";
 
 const GameBoard = () => {
-    const { roomId } = useParams();
+    const { roomCode } = useParams();
+    const playerId = localStorage.getItem("playerId"); // guardado localmente al entrar
+
     const [board, setBoard] = useState(null);
-    const [playerPos, setPlayerPos] = useState(null);
     const [isMoving, setIsMoving] = useState(false);
     const boardRef = useRef();
 
     useEffect(() => {
         const fetchBoard = async () => {
-            const data = await getGameState(roomId);
+            const data = await getGameState(roomCode);
             setBoard(data);
-
-            if (data.player) {
-                setPlayerPos({ x: data.player.x, y: data.player.y });
-            }
         };
 
         fetchBoard();
@@ -33,12 +30,8 @@ const GameBoard = () => {
             if (["w", "a", "s", "d"].includes(key)) {
                 setIsMoving(true);
                 try {
-                    const updatedBoard = await movePlayer(key);
+                    const updatedBoard = await movePlayer(roomCode, playerId, key);
                     setBoard(updatedBoard);
-
-                    if (updatedBoard.player) {
-                        setPlayerPos({ x: updatedBoard.player.x, y: updatedBoard.player.y });
-                    }
                 } catch (error) {
                     console.error("Error al mover el personaje:", error);
                 } finally {
@@ -46,14 +39,14 @@ const GameBoard = () => {
                 }
             } else if (key === "z") {
                 try {
-                    const updatedBoard = await buildBlock(); // llama al back para crear el bloque
+                    const updatedBoard = await buildBlock(roomCode, playerId); // llama al back para crear el bloque
                     setBoard(updatedBoard); // actualiza el tablero
                 } catch (error) {
                     console.error("Error al construir el bloque:", error);
                 }
             } else if (key === "x") {
                   try {
-                      const updatedBoard = await destroyBlock(); // llama al back para destruir el bloque
+                      const updatedBoard = await destroyBlock(roomCode, playerId); // llama al back para destruir el bloque
                       setBoard(updatedBoard); // actualiza el tablero
                   } catch (error) {
                       console.error("Error al destruir el bloque:", error);
@@ -66,7 +59,7 @@ const GameBoard = () => {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [isMoving]);
 
-    if (!board || !playerPos) return <p>Cargando...</p>;
+    if (!board || !board.characters) return <p>Cargando...</p>;
 
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
@@ -92,6 +85,16 @@ const GameBoard = () => {
 
     const transposedGrid = transposeGrid(board.grid);
 
+    const getSpriteForCharacter = (characterId) => {
+        switch (characterId) {
+            case "1": return "/resources/fire_character.png";
+            case "2": return "/resources/water_character.png";
+            case "3": return "/resources/wind_character.png";
+            case "4": return "/resources/stone_character.png";
+            default: return "/resources/fire_character.png";
+        }
+    };
+
     return (
         <div className="game-wrapper">
             <div
@@ -109,21 +112,24 @@ const GameBoard = () => {
                                 key={`${cell.x}-${cell.y}`}
                                 cell={cell}
                                 tileSize={tileSize}
-                                playerPos={playerPos}
                             />
                         ))}
                     </div>
                 ))}
-                <img
-                    src="/resources/fire_character.png"
-                    alt="Player"
-                    className="player-sprite"
-                    style={{
-                        width: tileSize,
-                        height: tileSize,
-                        transform: `translate(${playerPos.x * tileSize}px, ${playerPos.y * tileSize}px)`,
-                    }}
-                />
+
+                {board.characters.map((char) => (
+                    <img
+                        key={char.id}
+                        src={getSpriteForCharacter(char.character)}
+                        alt={`Character ${char.id}`}
+                        className="player-sprite"
+                        style={{
+                            width: tileSize,
+                            height: tileSize,
+                            transform: `translate(${char.x * tileSize}px, ${char.y * tileSize}px)`,
+                        }}
+                    />
+                ))}
             </div>
         </div>
     );
