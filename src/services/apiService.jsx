@@ -27,12 +27,12 @@ class ApiService {
   /**
    * Realizar una petición GET
    * @param {string} endpoint - Endpoint a consultar
-   * @param {Object} params - Parámetros de la petición
+   * @param {Object} options - Opciones adicionales (params, headers, etc.)
    * @returns {Promise<Object>} - Respuesta de la petición
    */
-  async get(endpoint, params = {}) {
+  async get(endpoint, options = {}) {
     try {
-      const response = await this.client.get(endpoint, { params });
+      const response = await this.client.get(endpoint, options);
       return response.data;
     } catch (error) {
       console.error(`Error en GET ${endpoint}:`, error);
