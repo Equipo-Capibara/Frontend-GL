@@ -1,20 +1,15 @@
 import {useState, useEffect, useRef} from "react";
 import { useParams } from "react-router-dom";
 import CharacterCard from "./characterCard";
-import fondo from "../resources/fondo_home.png";
-import stone from "../resources/banner_stone.png";
-import brisa from "../resources/banner_brisa.png";
-import aqua from "../resources/banner_aqua.png";
-import flame from "../resources/banner_flame.png";
 import '../styles/roomScreen.css';
 import stompClient from "../websocket";
 
 // Personajes predefinidos
 const characters = [
-    { id: 1, name: "Flame", color: "#FFAD88", abilities: ["Crea y destruye bloques de fuego en línea recta.", "Lanza fuego a dos cuadros de distancia haciendo daño."], img: flame },
-    { id: 2, name: "Aqua", color: "#A0D8F1", abilities: ["Crea y destruye bloques de agua en línea recta.", "Lluvia que aturde a tres cuadros de distancia."], img: aqua },
-    { id: 3, name: "Brisa", color: "#DADADA", abilities: ["Crea y destruye bloques de aire en línea recta.", "Empuja a todos cinco cuadros de distancia."], img: brisa },
-    { id: 4, name: "Stone", color: "#B4E197", abilities: ["Crea y destruye bloques de tierra en línea recta.", "Obtiene inmunidad a todo por 10 segundos."], img: stone }
+    { id: 1, name: "Flame", color: "#FFAD88", abilities: ["Crea y destruye bloques de fuego en línea recta.", "Lanza fuego a dos cuadros de distancia haciendo daño."], img: "/resources/banner_flame.png" },
+    { id: 2, name: "Aqua", color: "#A0D8F1", abilities: ["Crea y destruye bloques de agua en línea recta.", "Lluvia que aturde a tres cuadros de distancia."], img: "/resources/banner_aqua.png" },
+    { id: 3, name: "Brisa", color: "#DADADA", abilities: ["Crea y destruye bloques de aire en línea recta.", "Empuja a todos cinco cuadros de distancia."], img: "/resources/banner_brisa.png" },
+    { id: 4, name: "Stone", color: "#B4E197", abilities: ["Crea y destruye bloques de tierra en línea recta.", "Obtiene inmunidad a todo por 10 segundos."], img: "/resources/banner_stone.png" }
 ];
 
 export default function RoomScreen() {
@@ -247,7 +242,7 @@ export default function RoomScreen() {
 
     return (
         <div className="room" style={{
-            backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${fondo})`,
+            backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(/resources/fondo_home.png)`,
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",

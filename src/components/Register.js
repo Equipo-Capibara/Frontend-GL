@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import fondoHome from "../resources/fondo_home.png";
 import '../styles/register.css';
 
 const homeStyle = {
-    background: `linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${fondoHome})`,
+    background: `linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(/resources/fondo_home.png)`,
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
     backgroundSize: "100% 100%",

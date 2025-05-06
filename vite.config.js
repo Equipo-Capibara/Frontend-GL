@@ -33,5 +33,8 @@ export default defineConfig({
         '.js': 'jsx'
       }
     }
+  },
+  define: {
+    global: 'window'
   }
 }) 
