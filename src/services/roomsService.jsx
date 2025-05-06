@@ -120,10 +120,16 @@ class RoomsService {
    */
   async selectCharacter(roomCode, playerId, characterId) {
     try {
-      await websocketService.publish(`/app/room/${roomCode}/character-select`, { playerId, character: characterId });
+      console.log('🎮 Seleccionando personaje:', { roomCode, playerId, characterId });
+      // Asegurarse de que characterId sea un número
+      const charId = Number(characterId);
+      await websocketService.publish(`/app/room/${roomCode}/character-select`, { 
+        playerId, 
+        character: charId 
+      });
       return true;
     } catch (error) {
-      console.error('Error al seleccionar personaje:', error);
+      console.error('❌ Error al seleccionar personaje:', error);
       return false;
     }
   }

@@ -51,28 +51,41 @@ export default function RoomScreen() {
   const hasSubscribed = useRef(false);
   const subscriptions = useRef([]);
 
+  // Imprimir información de debugging
+  useEffect(() => {
+    console.log('🔍 WebSocket conectado:', websocketService.isConnected);
+    console.log('🔍 Player ID:', playersService.getCurrentPlayerId());
+    console.log('🔍 Player Name:', playersService.getCurrentPlayerName());
+    console.log('🔍 Room ID:', roomId);
+  }, [roomId]);
+
   useEffect(() => {
     if (!roomId || hasSubscribed.current) return;
 
     const setupRoomSubscriptions = async () => {
       try {
+        console.log('🔄 Configurando suscripciones para la sala', roomId);
+        
         // Definimos los callbacks para los diferentes eventos de la sala
         const roomCallbacks = {
           onJoin: (data) => {
+            console.log('👋 Evento onJoin recibido:', data);
             const { username } = data;
             setAlerts((prev) => [...prev, `${username} se ha unido a la sala`]);
             setTimeout(() => setAlerts((prev) => prev.slice(1)), 3000);
           },
           onPlayersUpdate: (data) => {
+            console.log('👥 Evento onPlayersUpdate recibido:', data);
             const players = Object.values(data.players || data);
             updateCharacterSlots(players);
           },
           onCharacterSelect: (data) => {
-            console.log('🎭 character-select recibido');
+            console.log('🎭 Evento character-select recibido:', data);
             const players = Object.values(data.players || data);
             updateCharacterSlots(players);
           },
           onConfirm: (data) => {
+            console.log('✅ Evento onConfirm recibido:', data);
             const updatedCharacters = data.get ? data.get('players') : data.players;
             const myId = playersService.getCurrentPlayerId();
 
@@ -90,7 +103,7 @@ export default function RoomScreen() {
             }
           },
           onGameStart: (data) => {
-            console.log('🚀 Juego iniciado');
+            console.log('🚀 Evento onGameStart recibido:', data);
             const { gameState } = data;
 
             // Guardamos el estado del juego si es necesario
@@ -100,19 +113,20 @@ export default function RoomScreen() {
 
             // Redirigimos a la pantalla de juego
             window.location.href = `/game/${roomId}`;
-          },
+          }
         };
 
         // Suscribimos a los eventos de la sala usando el servicio de salas
         const subs = await roomsService.subscribeToRoom(roomId, roomCallbacks);
+        console.log('📊 Suscripciones creadas:', subs);
         subscriptions.current = subs;
-
+        
         // Enviamos el mensaje de unión a la sala
-        sendJoinAlert();
-
+        await sendJoinAlert();
+        
         hasSubscribed.current = true;
       } catch (error) {
-        console.error('Error al suscribirse a la sala:', error);
+        console.error('❌ Error al suscribirse a la sala:', error);
       }
     };
 
@@ -121,7 +135,8 @@ export default function RoomScreen() {
     // Limpieza de suscripciones al desmontar
     return () => {
       if (subscriptions.current.length > 0) {
-        subscriptions.current.forEach((sub) => {
+        console.log('🧹 Limpiando suscripciones');
+        subscriptions.current.forEach(sub => {
           websocketService.unsubscribe(`/topic/room/${roomId}/${sub.type}`);
         });
       }
@@ -129,11 +144,12 @@ export default function RoomScreen() {
   }, [roomId]);
 
   function updateCharacterSlots(players) {
-    console.log('Jugadores actuales en la sala:', players);
+    console.log('🔄 Actualizando slots de jugadores:', players);
     setSelectedCharacters(players);
   }
 
   const nextCharacter = () => {
+    console.log('➡️ Siguiente personaje');
     setCurrentCharacterIndex((prev) => {
       const newIndex = (prev + 1) % characters.length;
       updateCharacterSelection(newIndex);
@@ -142,6 +158,7 @@ export default function RoomScreen() {
   };
 
   const prevCharacter = () => {
+    console.log('⬅️ Personaje anterior');
     setCurrentCharacterIndex((prev) => {
       const newIndex = (prev - 1 + characters.length) % characters.length;
       updateCharacterSelection(newIndex);
@@ -152,13 +169,21 @@ export default function RoomScreen() {
   const sendJoinAlert = async () => {
     const playerName = playersService.getCurrentPlayerName();
     const playerId = playersService.getCurrentPlayerId();
+    
+    console.log('🔄 Enviando alerta de unión:', { playerName, playerId, roomId });
 
     if (playerId) {
       try {
-        await roomsService.joinRoom(roomId, playerName, playerId);
+        const result = await roomsService.joinRoom(roomId, playerName, playerId);
+        console.log('✅ Resultado de unirse a la sala:', result);
+        return result;
       } catch (error) {
-        console.error('Error al enviar alerta de unión:', error);
+        console.error('❌ Error al enviar alerta de unión:', error);
+        return false;
       }
+    } else {
+      console.error('❌ No hay ID de jugador');
+      return false;
     }
   };
 
@@ -184,8 +209,13 @@ export default function RoomScreen() {
   const updateCharacterSelection = async (newCharacterIndex) => {
     const selectedChar = characters[newCharacterIndex];
     const playerId = playersService.getCurrentPlayerId();
+    
+    console.log('🔄 Actualizando selección de personaje:', { newCharacterIndex, selectedChar, playerId });
 
-    if (!playerId) return;
+    if (!playerId) {
+      console.error('❌ No hay ID de jugador');
+      return;
+    }
 
     // Actualiza tu propio personaje en el estado local
     setSelectedCharacters((prev) =>
@@ -194,9 +224,10 @@ export default function RoomScreen() {
 
     try {
       // Usa el servicio de salas para enviar la selección de personaje
-      await roomsService.selectCharacter(roomId, playerId, selectedChar.id);
+      const result = await roomsService.selectCharacter(roomId, playerId, selectedChar.id);
+      console.log('✅ Resultado de seleccionar personaje:', result);
     } catch (error) {
-      console.error('Error al actualizar selección de personaje:', error);
+      console.error('❌ Error al actualizar selección de personaje:', error);
     }
   };
 
