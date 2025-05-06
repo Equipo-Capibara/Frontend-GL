@@ -1,4 +1,3 @@
-import API_CONFIG from '../config/apiConfig';
 import websocketService from './websocketService';
 import apiService from './apiService';
 
@@ -22,21 +21,6 @@ class RoomsService {
   }
 
   /**
-   * Verifica si una sala existe.
-   * @param {string} roomCode - Código de la sala.
-   * @returns {Promise<boolean>} - True si la sala existe, false en caso contrario.
-   */
-  async checkRoom(roomCode) {
-    try {
-      await apiService.get(`/api/rooms/${roomCode}`);
-      return true;
-    } catch (error) {
-      console.error('Error al verificar la sala:', error);
-      return false;
-    }
-  }
-
-  /**
    * Permite a un jugador unirse a una sala.
    * @param {string} roomCode - Código de la sala.
    * @param {string} username - Nombre del jugador.
@@ -45,7 +29,7 @@ class RoomsService {
    */
   async joinRoom(roomCode, username, playerId) {
     try {
-      await websocketService.publish(`/app/joinRoom/${roomCode}`, { username, playerId });
+      await websocketService.publish(`/app/room/${roomCode}/join`, { username, playerId });
       return true;
     } catch (error) {
       console.error('Error al unirse a la sala:', error);
@@ -159,7 +143,7 @@ class RoomsService {
    */
   async startGame(roomCode, players) {
     try {
-      await websocketService.publish(`/app/room/${roomCode}/start`, { roomId: roomCode, players });
+      await websocketService.publish(`/app/room/${roomCode}/start`);
       return true;
     } catch (error) {
       console.error('Error al iniciar el juego:', error);

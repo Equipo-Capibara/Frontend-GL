@@ -19,20 +19,6 @@ class PlayersService {
   }
 
   /**
-   * Obtiene información de un jugador por su ID.
-   * @param {string} playerId - ID del jugador.
-   * @returns {Promise<Object>} - Objeto con la información del jugador.
-   */
-  async getPlayer(playerId) {
-    try {
-      return await apiService.get(`/api/players/${playerId}`);
-    } catch (error) {
-      console.error('Error al obtener jugador:', error);
-      throw new Error('No se pudo obtener la información del jugador');
-    }
-  }
-
-  /**
    * Almacena o actualiza localmente la información del jugador.
    * @param {Object} player - Datos del jugador a almacenar.
    */
