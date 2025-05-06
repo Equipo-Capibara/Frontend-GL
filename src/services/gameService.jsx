@@ -11,7 +11,7 @@ class GameService {
    */
   async getGameState(roomCode) {
     try {
-      return await apiService.get('/game/state', { params: { roomCode } });
+      return await apiService.get('/game/state', { params: { roomCode: roomCode } });
     } catch (error) {
       console.error('Error al obtener estado del juego:', error);
       throw new Error('Respuesta vacía o con error al obtener el estado del juego');
