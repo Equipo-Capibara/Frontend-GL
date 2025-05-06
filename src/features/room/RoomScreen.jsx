@@ -40,7 +40,7 @@ const characters = [
 ];
 
 export default function RoomScreen() {
-  const { roomId } = useParams();
+  const { roomCode } = useParams();
   const [currentCharacterIndex, setCurrentCharacterIndex] = useState(0);
   const [selectedCharacters, setSelectedCharacters] = useState([]);
   const [alerts, setAlerts] = useState([]);
@@ -56,15 +56,15 @@ export default function RoomScreen() {
     console.log('🔍 WebSocket conectado:', websocketService.isConnected);
     console.log('🔍 Player ID:', playersService.getCurrentPlayerId());
     console.log('🔍 Player Name:', playersService.getCurrentPlayerName());
-    console.log('🔍 Room ID:', roomId);
-  }, [roomId]);
+    console.log('🔍 Room ID:', roomCode);
+  }, [roomCode]);
 
   useEffect(() => {
-    if (!roomId || hasSubscribed.current) return;
+    if (!roomCode || hasSubscribed.current) return;
 
     const setupRoomSubscriptions = async () => {
       try {
-        console.log('🔄 Configurando suscripciones para la sala', roomId);
+        console.log('🔄 Configurando suscripciones para la sala', roomCode);
         
         // Definimos los callbacks para los diferentes eventos de la sala
         const roomCallbacks = {
@@ -112,12 +112,12 @@ export default function RoomScreen() {
             }
 
             // Redirigimos a la pantalla de juego
-            window.location.href = `/game/${roomId}`;
+            window.location.href = `/game/${roomCode}`;
           }
         };
 
         // Suscribimos a los eventos de la sala usando el servicio de salas
-        const subs = await roomsService.subscribeToRoom(roomId, roomCallbacks);
+        const subs = await roomsService.subscribeToRoom(roomCode, roomCallbacks);
         console.log('📊 Suscripciones creadas:', subs);
         subscriptions.current = subs;
         
@@ -137,11 +137,11 @@ export default function RoomScreen() {
       if (subscriptions.current.length > 0) {
         console.log('🧹 Limpiando suscripciones');
         subscriptions.current.forEach(sub => {
-          websocketService.unsubscribe(`/topic/room/${roomId}/${sub.type}`);
+          websocketService.unsubscribe(`/topic/room/${roomCode}/${sub.type}`);
         });
       }
     };
-  }, [roomId]);
+  }, [roomCode]);
 
   function updateCharacterSlots(players) {
     console.log('🔄 Actualizando slots de jugadores:', players);
@@ -170,11 +170,11 @@ export default function RoomScreen() {
     const playerName = playersService.getCurrentPlayerName();
     const playerId = playersService.getCurrentPlayerId();
     
-    console.log('🔄 Enviando alerta de unión:', { playerName, playerId, roomId });
+    console.log('🔄 Enviando alerta de unión:', { playerName, playerId, roomId: roomCode });
 
     if (playerId) {
       try {
-        const result = await roomsService.joinRoom(roomId, playerName, playerId);
+        const result = await roomsService.joinRoom(roomCode, playerName, playerId);
         console.log('✅ Resultado de unirse a la sala:', result);
         return result;
       } catch (error) {
@@ -224,7 +224,7 @@ export default function RoomScreen() {
 
     try {
       // Usa el servicio de salas para enviar la selección de personaje
-      const result = await roomsService.selectCharacter(roomId, playerId, selectedChar.id);
+      const result = await roomsService.selectCharacter(roomCode, playerId, selectedChar.id);
       console.log('✅ Resultado de seleccionar personaje:', result);
     } catch (error) {
       console.error('❌ Error al actualizar selección de personaje:', error);
@@ -234,7 +234,7 @@ export default function RoomScreen() {
   const startGame = async () => {
     try {
       // Usa el servicio de salas para iniciar el juego
-      await roomsService.startGame(roomId, selectedCharacters);
+      await roomsService.startGame(roomCode, selectedCharacters);
     } catch (error) {
       console.error('Error al iniciar el juego:', error);
     }
@@ -261,7 +261,7 @@ export default function RoomScreen() {
 
     try {
       // Usa el servicio de salas para confirmar la selección
-      await roomsService.confirmCharacterSelection(roomId, myId, myPlayer.character);
+      await roomsService.confirmCharacterSelection(roomCode, myId, myPlayer.character);
 
       // Actualiza el estado local
       setSelectedCharacters((prev) => prev.map((p) => (p.id === myId ? { ...p, characterSelected: true } : p)));
@@ -308,7 +308,7 @@ export default function RoomScreen() {
       </div>
 
       <div className="room-container">
-        <h1>Sala #{roomId}</h1>
+        <h1>Sala #{roomCode}</h1>
 
         {(() => {
           const playerName = playersService.getCurrentPlayerName();
