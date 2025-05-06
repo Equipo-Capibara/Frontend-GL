@@ -30,7 +30,7 @@ function Register() {
         if (name.length >= 3 && name.length <= 15) {
             try {
                 // Usando fetch para crear el jugador en el backend
-                const response = await fetch('http://localhost:8080/game/createPlayer?name=' + name, {
+                const response = await fetch('http://localhost:8080/api/players?name=' + name, {
                     method: 'POST',
                 });
 

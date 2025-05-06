@@ -26,7 +26,7 @@ stompClient.activate();
 
 export const createRoom = async (hostId, callback) => {
     try {
-        const response = await fetch("http://localhost:8080/api/room/create", {
+        const response = await fetch("http://localhost:8080/api/rooms", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

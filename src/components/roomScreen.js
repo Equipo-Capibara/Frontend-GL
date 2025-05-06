@@ -71,7 +71,8 @@ export default function RoomScreen() {
 
         stompClient.subscribe(`/topic/room/${roomId}/confirm`, (message) => {
             if (message.body) {
-                const updatedCharacters = JSON.parse(message.body);
+                const data = JSON.parse(message.body);
+                const updatedCharacters = data.get("players");
                 const myId = localStorage.getItem("playerId");
 
                 // Fusionamos el estado anterior para preservar mi "characterSelected"
@@ -186,6 +187,7 @@ export default function RoomScreen() {
 
         stompClient.publish({
             destination: `/app/room/${roomId}/start`,
+            // Body no necesario
             body: JSON.stringify({
                 roomId: roomId,
                 players: selectedCharacters
