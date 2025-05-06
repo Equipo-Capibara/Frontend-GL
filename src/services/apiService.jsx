@@ -44,11 +44,12 @@ class ApiService {
    * Realizar una petición POST
    * @param {string} endpoint - Endpoint a consultar
    * @param {Object} data - Datos a enviar
+   * @param {Object} options - Opciones adicionales (params, headers, etc.)
    * @returns {Promise<Object>} - Respuesta de la petición
    */
-  async post(endpoint, data = {}) {
+  async post(endpoint, data = {}, options = {}) {
     try {
-      const response = await this.client.post(endpoint, data);
+      const response = await this.client.post(endpoint, data, options);
       return response.data;
     } catch (error) {
       console.error(`Error en POST ${endpoint}:`, error);
@@ -60,11 +61,12 @@ class ApiService {
    * Realizar una petición PUT
    * @param {string} endpoint - Endpoint a consultar
    * @param {Object} data - Datos a enviar
+   * @param {Object} options - Opciones adicionales (params, headers, etc.)
    * @returns {Promise<Object>} - Respuesta de la petición
    */
-  async put(endpoint, data = {}) {
+  async put(endpoint, data = {}, options = {}) {
     try {
-      const response = await this.client.put(endpoint, data);
+      const response = await this.client.put(endpoint, data, options);
       return response.data;
     } catch (error) {
       console.error(`Error en PUT ${endpoint}:`, error);
@@ -75,11 +77,12 @@ class ApiService {
   /**
    * Realizar una petición DELETE
    * @param {string} endpoint - Endpoint a eliminar
+   * @param {Object} options - Opciones adicionales (params, headers, etc.)
    * @returns {Promise<Object>} - Respuesta de la petición
    */
-  async delete(endpoint) {
+  async delete(endpoint, options = {}) {
     try {
-      const response = await this.client.delete(endpoint);
+      const response = await this.client.delete(endpoint, options);
       return response.data;
     } catch (error) {
       console.error(`Error en DELETE ${endpoint}:`, error);

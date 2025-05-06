@@ -11,7 +11,7 @@ class GameService {
    */
   async getGameState(roomCode) {
     try {
-      return await apiService.get('game/state', { roomCode });
+      return await apiService.get('/game/state', { params: { roomCode } });
     } catch (error) {
       console.error('Error al obtener estado del juego:', error);
       throw new Error('Respuesta vacía o con error al obtener el estado del juego');
@@ -27,7 +27,7 @@ class GameService {
    */
   async movePlayer(roomCode, playerId, direction) {
     try {
-      return await apiService.post('game/move', null, {
+      return await apiService.post('/game/move', null, {
         params: { roomCode, playerId, direction },
       });
     } catch (error) {
@@ -51,7 +51,7 @@ class GameService {
         params.direction = direction;
       }
 
-      return await apiService.post('game/build', null, { params });
+      return await apiService.post('/game/build', null, { params });
     } catch (error) {
       console.error('Error al construir bloque:', error);
       throw new Error('Error al construir bloque');
@@ -66,7 +66,7 @@ class GameService {
    */
   async destroyBlock(roomCode, playerId) {
     try {
-      return await apiService.post('game/destroy', null, {
+      return await apiService.post('/game/destroy', null, {
         params: { roomCode, playerId },
       });
     } catch (error) {

@@ -11,7 +11,7 @@ class PlayersService {
    */
   async createPlayer(name) {
     try {
-      return await apiService.post('api/players', null, { params: { name: name } });
+      return await apiService.post('/api/players', null, { params: { name: name } });
     } catch (error) {
       console.error('Error al crear jugador:', error);
       throw new Error('Hubo un problema al crear el jugador');
@@ -25,7 +25,7 @@ class PlayersService {
    */
   async getPlayer(playerId) {
     try {
-      return await apiService.get(`api/players/${playerId}`);
+      return await apiService.get(`/api/players/${playerId}`);
     } catch (error) {
       console.error('Error al obtener jugador:', error);
       throw new Error('No se pudo obtener la información del jugador');

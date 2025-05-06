@@ -14,7 +14,7 @@ class RoomsService {
    */
   async createRoom(hostId) {
     try {
-      return await apiService.post('api/rooms', { hostId });
+      return await apiService.post('/api/rooms', { hostId });
     } catch (error) {
       console.error('Error al crear la sala:', error);
       throw new Error('No se pudo crear la sala');
@@ -28,7 +28,7 @@ class RoomsService {
    */
   async checkRoom(roomCode) {
     try {
-      await apiService.get(`api/rooms/${roomCode}`);
+      await apiService.get(`/api/rooms/${roomCode}`);
       return true;
     } catch (error) {
       console.error('Error al verificar la sala:', error);
