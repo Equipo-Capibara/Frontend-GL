@@ -29,16 +29,9 @@ function RegisterCode() {
   const handleSubmit = async () => {
     if (code.length === 6) {
       try {
-        // Verificamos si la sala existe usando el nuevo servicio
-        const roomExists = await roomsService.checkRoom(code);
-
-        if (roomExists) {
-          localStorage.setItem('roomCode', code);
-          window.dispatchEvent(new Event('storage'));
-          navigate(`/room/${code}`);
-        } else {
-          setError('El código de sala no es válido.');
-        }
+        localStorage.setItem('roomCode', code);
+        window.dispatchEvent(new Event('storage'));
+        navigate(`/room/${code}`);
       } catch (error) {
         setError('Error al conectar con el servidor.');
       }
