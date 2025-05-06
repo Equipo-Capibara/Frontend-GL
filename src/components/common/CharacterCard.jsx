@@ -1,4 +1,4 @@
-import '../styles/characterCard.css';
+import '../../styles/characterCard.css';
 
 export default function CharacterCard({ character, player, selected, onSelect, onRemove }) {
   return (

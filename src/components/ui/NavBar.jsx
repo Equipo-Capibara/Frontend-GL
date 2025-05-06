@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import '../styles/navbar.css';
+import '../../styles/navbar.css';
 
 const NavBar = () => {
   const location = useLocation();

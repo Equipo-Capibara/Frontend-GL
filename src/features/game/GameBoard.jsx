@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import Tile from './Tile';
-import { getGameState, movePlayer, buildBlock, destroyBlock } from '../api/gameApi';
-import '../styles/gameBoard.css';
+import { Tile } from '../../components/game';
+import { gameService, playersService } from '../../services';
+import '../../styles/gameBoard.css';
 
 const GameBoard = () => {
   const { roomCode } = useParams();
-  const playerId = localStorage.getItem('playerId'); // guardado localmente al entrar
+  const playerId = playersService.getCurrentPlayerId(); // Usa el servicio en lugar de localStorage
 
   const [board, setBoard] = useState(null);
   const [isMoving, setIsMoving] = useState(false);
@@ -14,12 +14,17 @@ const GameBoard = () => {
 
   useEffect(() => {
     const fetchBoard = async () => {
-      const data = await getGameState(roomCode);
-      setBoard(data);
+      try {
+        // Usamos el servicio de juego para obtener el estado
+        const data = await gameService.getGameState(roomCode);
+        setBoard(data);
+      } catch (error) {
+        console.error('Error al obtener estado del juego:', error);
+      }
     };
 
     fetchBoard();
-  }, []);
+  }, [roomCode]);
 
   useEffect(() => {
     const handleKeyDown = async (e) => {
@@ -30,7 +35,8 @@ const GameBoard = () => {
       if (['w', 'a', 's', 'd'].includes(key)) {
         setIsMoving(true);
         try {
-          const updatedBoard = await movePlayer(roomCode, playerId, key);
+          // Usamos el servicio de juego para mover al jugador
+          const updatedBoard = await gameService.movePlayer(roomCode, playerId, key);
           setBoard(updatedBoard);
         } catch (error) {
           console.error('Error al mover el personaje:', error);
@@ -39,15 +45,17 @@ const GameBoard = () => {
         }
       } else if (key === 'z') {
         try {
-          const updatedBoard = await buildBlock(roomCode, playerId); // llama al back para crear el bloque
-          setBoard(updatedBoard); // actualiza el tablero
+          // Usamos el servicio de juego para construir un bloque
+          const updatedBoard = await gameService.buildBlock(roomCode, playerId);
+          setBoard(updatedBoard);
         } catch (error) {
           console.error('Error al construir el bloque:', error);
         }
       } else if (key === 'x') {
         try {
-          const updatedBoard = await destroyBlock(roomCode, playerId); // llama al back para destruir el bloque
-          setBoard(updatedBoard); // actualiza el tablero
+          // Usamos el servicio de juego para destruir un bloque
+          const updatedBoard = await gameService.destroyBlock(roomCode, playerId);
+          setBoard(updatedBoard);
         } catch (error) {
           console.error('Error al destruir el bloque:', error);
         }
@@ -56,7 +64,7 @@ const GameBoard = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isMoving]);
+  }, [isMoving, roomCode, playerId]);
 
   if (!board || !board.characters) return <p>Cargando...</p>;
 

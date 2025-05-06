@@ -1,10 +1,11 @@
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
-import Home from './components/Home';
-import Register from './components/Register';
-import NavBar from './components/NavBar';
-import RoomScreen from './components/roomScreen';
-import RegisterCode from './components/RegisterCode';
-import GameBoard from './components/GameBoard';
+import Home from './features/home/Home';
+import Register from './features/auth/Register';
+import { NavBar } from './components/ui';
+import RoomScreen from './features/room/RoomScreen';
+import RegisterCode from './features/auth/RegisterCode';
+import { GameBoard } from './features/game';
+import { WebSocketProvider } from './context/WebSocketContext';
 import './styles/app.css';
 
 const Layout = () => {
@@ -29,9 +30,11 @@ const Layout = () => {
 
 function App() {
   return (
-    <Router>
-      <Layout />
-    </Router>
+    <WebSocketProvider>
+      <Router>
+        <Layout />
+      </Router>
+    </WebSocketProvider>
   );
 }
 

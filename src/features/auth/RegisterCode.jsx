@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/register.css';
+import { roomsService } from '../../services';
+import '../../styles/register.css';
 
 const homeStyle = {
   background: `linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(/resources/fondo_home.png)`,
@@ -28,8 +29,10 @@ function RegisterCode() {
   const handleSubmit = async () => {
     if (code.length === 6) {
       try {
-        const response = await fetch(`http://localhost:3000/api/room/${code}`);
-        if (response.ok) {
+        // Verificamos si la sala existe usando el nuevo servicio
+        const roomExists = await roomsService.checkRoom(code);
+
+        if (roomExists) {
           localStorage.setItem('roomCode', code);
           window.dispatchEvent(new Event('storage'));
           navigate(`/room/${code}`);

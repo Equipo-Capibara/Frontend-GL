@@ -3,7 +3,7 @@ import Block from './Block';
 import Character from './Character';
 import Key from './Key';
 import Door from './Door';
-import '../styles/gameBoard.css';
+import '../../styles/gameBoard.css';
 
 const Tile = ({ cell, tileSize, playerPos }) => {
   const style = {

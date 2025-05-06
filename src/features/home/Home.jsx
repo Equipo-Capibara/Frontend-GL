@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { createRoom } from '../websocket';
-import '../styles/home.css';
+import { roomsService, playersService } from '../../services';
+import '../../styles/home.css';
 
 const homeStyle = {
   background: `linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(/resources/fondo_home.png)`,
@@ -13,21 +13,27 @@ const homeStyle = {
 function Home() {
   const navigate = useNavigate();
 
-  const handleCreateRoom = () => {
-    const hostId = localStorage.getItem('playerId');
-    console.log('id', localStorage.getItem('playerId'));
+  const handleCreateRoom = async () => {
+    // Obtenemos el ID del jugador desde el servicio
+    const hostId = playersService.getCurrentPlayerId();
+
     if (!hostId) {
       console.error('No se ha encontrado un jugador válido');
       return;
     }
 
-    createRoom(hostId, (room) => {
+    try {
+      // Usamos el servicio de salas para crear una nueva sala
+      const room = await roomsService.createRoom(hostId);
+
       if (room && room.code) {
         navigate(`/room/${room.code}`);
       } else {
         console.error('Error al crear la sala o roomId no encontrado');
       }
-    });
+    } catch (error) {
+      console.error('Error al crear la sala:', error);
+    }
   };
 
   return (

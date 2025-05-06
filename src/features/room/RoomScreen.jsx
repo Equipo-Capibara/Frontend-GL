@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import CharacterCard from './characterCard';
-import '../styles/roomScreen.css';
-import stompClient from '../websocket';
+import { websocketService, roomsService, playersService } from '../../services';
+import { CharacterCard } from '../../components/common';
+import '../../styles/roomScreen.css';
 
 // Personajes predefinidos
 const characters = [
@@ -49,77 +49,84 @@ export default function RoomScreen() {
   const allPlayersReady = selectedCharacters.length === 4 && selectedCharacters.every((p) => p.characterSelected);
 
   const hasSubscribed = useRef(false);
+  const subscriptions = useRef([]);
 
   useEffect(() => {
-    if (!stompClient || !roomId || hasSubscribed.current) return;
+    if (!roomId || hasSubscribed.current) return;
 
-    const checkConnection = setInterval(() => {
-      if (stompClient.connected) {
-        console.log('✅ WebSocket conectado, suscribiéndose...');
-        subscribeToRoom();
+    const setupRoomSubscriptions = async () => {
+      try {
+        // Definimos los callbacks para los diferentes eventos de la sala
+        const roomCallbacks = {
+          onJoin: (data) => {
+            const { username } = data;
+            setAlerts((prev) => [...prev, `${username} se ha unido a la sala`]);
+            setTimeout(() => setAlerts((prev) => prev.slice(1)), 3000);
+          },
+          onPlayersUpdate: (data) => {
+            const players = Object.values(data.players || data);
+            updateCharacterSlots(players);
+          },
+          onCharacterSelect: (data) => {
+            console.log('🎭 character-select recibido');
+            const players = Object.values(data.players || data);
+            updateCharacterSlots(players);
+          },
+          onConfirm: (data) => {
+            const updatedCharacters = data.get ? data.get('players') : data.players;
+            const myId = playersService.getCurrentPlayerId();
+
+            if (updatedCharacters) {
+              // Fusionamos el estado anterior para preservar mi "characterSelected"
+              setSelectedCharacters((prev) =>
+                updatedCharacters.map((player) => {
+                  const prevPlayer = prev.find((p) => p.id === player.id);
+                  if (player.id === myId && prevPlayer?.characterSelected) {
+                    return { ...player, characterSelected: true };
+                  }
+                  return player;
+                })
+              );
+            }
+          },
+          onGameStart: (data) => {
+            console.log('🚀 Juego iniciado');
+            const { gameState } = data;
+
+            // Guardamos el estado del juego si es necesario
+            if (gameState) {
+              localStorage.setItem('gameState', JSON.stringify(gameState));
+            }
+
+            // Redirigimos a la pantalla de juego
+            window.location.href = `/game/${roomId}`;
+          },
+        };
+
+        // Suscribimos a los eventos de la sala usando el servicio de salas
+        const subs = await roomsService.subscribeToRoom(roomId, roomCallbacks);
+        subscriptions.current = subs;
+
+        // Enviamos el mensaje de unión a la sala
         sendJoinAlert();
+
         hasSubscribed.current = true;
-        clearInterval(checkConnection);
+      } catch (error) {
+        console.error('Error al suscribirse a la sala:', error);
       }
-    }, 500);
-
-    return () => clearInterval(checkConnection);
-  }, [stompClient, roomId]);
-
-  function subscribeToRoom() {
-    if (!stompClient?.connected) return;
-
-    stompClient.subscribe(`/topic/room/${roomId}/join-alert`, (message) => {
-      const { username } = JSON.parse(message.body);
-      setAlerts((prev) => [...prev, `${username} se ha unido a la sala`]);
-      setTimeout(() => setAlerts((prev) => prev.slice(1)), 3000);
-    });
-
-    const handlePlayersUpdate = (data) => {
-      const players = Object.values(data.players);
-      updateCharacterSlots(players); // o como lo manejes
     };
 
-    stompClient.subscribe('/topic/room/' + roomId + '/character-select', (message) => {
-      console.log('🎭 character-select recibido');
-      handlePlayersUpdate(JSON.parse(message.body));
-    });
+    setupRoomSubscriptions();
 
-    stompClient.subscribe('/topic/room/' + roomId + '/players', (message) => {
-      console.log('👥 players recibido');
-      handlePlayersUpdate(JSON.parse(message.body));
-    });
-
-    stompClient.subscribe(`/topic/room/${roomId}/confirm`, (message) => {
-      if (message.body) {
-        const data = JSON.parse(message.body);
-        const updatedCharacters = data.get('players');
-        const myId = localStorage.getItem('playerId');
-
-        // Fusionamos el estado anterior para preservar mi "characterSelected"
-        setSelectedCharacters((prev) =>
-          updatedCharacters.map((player) => {
-            const prevPlayer = prev.find((p) => p.id === player.id);
-            if (player.id === myId && prevPlayer?.characterSelected) {
-              return { ...player, characterSelected: true };
-            }
-            return player;
-          })
-        );
+    // Limpieza de suscripciones al desmontar
+    return () => {
+      if (subscriptions.current.length > 0) {
+        subscriptions.current.forEach((sub) => {
+          websocketService.unsubscribe(`/topic/room/${roomId}/${sub.type}`);
+        });
       }
-    });
-
-    stompClient.subscribe(`/topic/room/${roomId}/start`, (message) => {
-      console.log('🚀 Juego iniciado');
-      const { gameState } = JSON.parse(message.body);
-
-      // Puedes guardar el gameState si es necesario
-      localStorage.setItem('gameState', JSON.stringify(gameState));
-
-      // Redirigir a la pantalla de juego
-      window.location.href = `/game/${roomId}`;
-    });
-  }
+    };
+  }, [roomId]);
 
   function updateCharacterSlots(players) {
     console.log('Jugadores actuales en la sala:', players);
@@ -142,20 +149,21 @@ export default function RoomScreen() {
     });
   };
 
-  const sendJoinAlert = () => {
-    const playerName = localStorage.getItem('playerName') || 'JugadorAnónimo';
-    const playerId = localStorage.getItem('playerId');
+  const sendJoinAlert = async () => {
+    const playerName = playersService.getCurrentPlayerName();
+    const playerId = playersService.getCurrentPlayerId();
 
-    if (stompClient?.connected && playerId) {
-      stompClient.publish({
-        destination: `/app/room/${roomId}/join`,
-        body: JSON.stringify({ username: playerName, playerId }),
-      });
+    if (playerId) {
+      try {
+        await roomsService.joinRoom(roomId, playerName, playerId);
+      } catch (error) {
+        console.error('Error al enviar alerta de unión:', error);
+      }
     }
   };
 
   const CharacterCardSelector = ({ character, currentCharacterIndex, onNext, onPrev, player }) => {
-    const isReady = player?.characterSelected; // 👈 Usamos directamente el estado de ese jugador
+    const isReady = player?.characterSelected;
 
     return (
       <div className="player-slot selector-slot">
@@ -173,44 +181,38 @@ export default function RoomScreen() {
     );
   };
 
-  const updateCharacterSelection = (newCharacterIndex) => {
+  const updateCharacterSelection = async (newCharacterIndex) => {
     const selectedChar = characters[newCharacterIndex];
-    const playerId = localStorage.getItem('playerId');
+    const playerId = playersService.getCurrentPlayerId();
 
-    if (!playerId || !stompClient?.connected) return;
+    if (!playerId) return;
 
-    // 🔁 Actualiza tu propio personaje en el estado local
+    // Actualiza tu propio personaje en el estado local
     setSelectedCharacters((prev) =>
       prev.map((player) => (player.id === playerId ? { ...player, character: selectedChar.id } : player))
     );
 
-    // 🛰️ Enviar la selección al servidor
-    stompClient.publish({
-      destination: `/app/room/${roomId}/character-select`,
-      body: JSON.stringify({
-        playerId: playerId,
-        character: selectedChar.id,
-      }),
-    });
+    try {
+      // Usa el servicio de salas para enviar la selección de personaje
+      await roomsService.selectCharacter(roomId, playerId, selectedChar.id);
+    } catch (error) {
+      console.error('Error al actualizar selección de personaje:', error);
+    }
   };
 
-  const startGame = () => {
-    if (!stompClient?.connected) return;
-
-    stompClient.publish({
-      destination: `/app/room/${roomId}/start`,
-      // Body no necesario
-      body: JSON.stringify({
-        roomId: roomId,
-        players: selectedCharacters,
-      }),
-    });
+  const startGame = async () => {
+    try {
+      // Usa el servicio de salas para iniciar el juego
+      await roomsService.startGame(roomId, selectedCharacters);
+    } catch (error) {
+      console.error('Error al iniciar el juego:', error);
+    }
   };
 
-  // Función para manejar la confirmación de la elección
-  const confirmSelection = () => {
-    const myId = localStorage.getItem('playerId');
+  const confirmSelection = async () => {
+    const myId = playersService.getCurrentPlayerId();
     const myPlayer = selectedCharacters.find((p) => p.id === myId);
+
     if (!myPlayer) return;
 
     const sameCharacterUsed = selectedCharacters.some(
@@ -224,19 +226,18 @@ export default function RoomScreen() {
     }
 
     setIsCharacterTaken(false);
-    setIsWaiting(true); // Cambia el estado a esperando...
+    setIsWaiting(true);
 
-    stompClient.publish({
-      destination: `/app/confirmCharacterSelection`,
-      body: JSON.stringify({
-        roomCode: roomId,
-        playerId: myId,
-        characterId: myPlayer.character,
-      }),
-    });
+    try {
+      // Usa el servicio de salas para confirmar la selección
+      await roomsService.confirmCharacterSelection(roomId, myId, myPlayer.character);
 
-    // Opcionalmente actualiza el estado local antes de que llegue confirmación real
-    setSelectedCharacters((prev) => prev.map((p) => (p.id === myId ? { ...p, characterSelected: true } : p)));
+      // Actualiza el estado local
+      setSelectedCharacters((prev) => prev.map((p) => (p.id === myId ? { ...p, characterSelected: true } : p)));
+    } catch (error) {
+      console.error('Error al confirmar selección de personaje:', error);
+      setIsWaiting(false);
+    }
   };
 
   // Función para manejar la respuesta del servidor sobre la confirmación del personaje
@@ -279,7 +280,7 @@ export default function RoomScreen() {
         <h1>Sala #{roomId}</h1>
 
         {(() => {
-          const playerName = localStorage.getItem('playerName');
+          const playerName = playersService.getCurrentPlayerName();
           console.log('selectedCharacters', selectedCharacters);
           const orderedPlayers = selectedCharacters
             .filter((p) => p && p.name) // aseguramos que no haya undefined
@@ -294,7 +295,7 @@ export default function RoomScreen() {
               <div className="character-selection">
                 {[...Array(4)].map((_, index) => {
                   const player = selectedCharacters[index]; // puede ser undefined
-                  const isMyCard = player?.id === localStorage.getItem('playerId');
+                  const isMyCard = player?.id === playersService.getCurrentPlayerId();
 
                   if (player) {
                     return isMyCard ? (

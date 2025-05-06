@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/register.css';
+import { playersService } from '../../services';
+import '../../styles/register.css';
 
 const homeStyle = {
   background: `linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(/resources/fondo_home.png)`,
@@ -28,21 +29,12 @@ function Register() {
   const handleSubmit = async () => {
     if (name.length >= 3 && name.length <= 15) {
       try {
-        // Usando fetch para crear el jugador en el backend
-        const response = await fetch('http://localhost:8080/api/players?name=' + name, {
-          method: 'POST',
-        });
+        // Usamos el servicio de jugadores para crear uno nuevo
+        const player = await playersService.createPlayer(name);
 
-        if (!response.ok) {
-          throw new Error('Hubo un problema al crear el jugador');
-        }
+        // Almacenamos los datos del jugador en localStorage
+        playersService.savePlayerToLocalStorage(player);
 
-        const player = await response.json();
-
-        localStorage.setItem('playerId', player.id);
-        localStorage.setItem('playerName', player.name);
-
-        window.dispatchEvent(new Event('storage'));
         navigate('/home');
       } catch (error) {
         // Manejo de errores
