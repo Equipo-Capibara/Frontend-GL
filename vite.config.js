@@ -18,10 +18,6 @@ export default defineConfig({
       overlay: true,
     },
   },
-  build: {
-    outDir: 'build',
-    sourcemap: true,
-  },
   esbuild: {
     loader: 'jsx',
     include: /src\/.*\.jsx?$/,
