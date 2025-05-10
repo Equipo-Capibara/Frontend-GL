@@ -54,7 +54,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: frontend-gl-node-app
-        path: .
+        path: dist
 
   deploy:
     runs-on: ubuntu-latest
