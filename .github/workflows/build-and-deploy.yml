@@ -21,8 +21,7 @@ name: Build and deploy Node app to Azure Web App
 
 env:
   AZURE_WEBAPP_NAME: capibara-front-agua-fuego    # set this to your application's name
-  AZURE_WEBAPP_PACKAGE_PATH: 'build'      # set this to the path to your web app project, defaults to the repository root
-  VITE_PACKAGE_PATH: build
+  AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
   NODE_VERSION: '22.x'                # set this to the node version to use
 
 on:
@@ -55,7 +54,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: frontend-gl-node-app
-        path: ${{ env.VITE_PACKAGE_PATH }}
+        path: .
 
   deploy:
     runs-on: ubuntu-latest
@@ -73,7 +72,6 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: frontend-gl-node-app
-        path: ${{ env.VITE_PACKAGE_PATH }}
 
     - name: 🚀 Deploy to Azure WebApp
       id: deploy-to-webapp
