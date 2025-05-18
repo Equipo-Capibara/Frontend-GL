@@ -21,8 +21,7 @@ name: Build and deploy Node app to Azure Web App
 
 env:
   APP_LOCATION: "/" # location of your client code
-  AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }} # secret containing deployment token for your static web app
-  NODE_VERSION: '22.x'                # set this to the node version to use
+  NODE_VERSION: "22.x"                # set this to the node version to use
 
 on:
   push:
@@ -35,6 +34,10 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    environment:
+      name: frontapp
+
     steps:
     - name: ⏬ Download code
       uses: actions/checkout@v4
@@ -44,7 +47,7 @@ jobs:
     - name: 🏗️ Build and Deploy Azure Static Web Apps 
       uses: Azure/static-web-apps-deploy@v1
       with:
-        azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN }} # secret containing api token for app
+        azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }} # secret containing deployment token for your static web app
         action: upload
         app_location: ${{ env.APP_LOCATION }}
         output_location: dist
