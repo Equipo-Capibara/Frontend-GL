@@ -16,6 +16,7 @@ const GameBoard = () => {
     const fetchBoard = async () => {
       try {
         // Usamos el servicio de juego para obtener el estado
+        console.log('Este es el roomCode en GameBoard: ', roomCode)
         const data = await gameService.getGameState(roomCode);
         setBoard(data);
       } catch (error) {
