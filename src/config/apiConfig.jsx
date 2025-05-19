@@ -1,12 +1,9 @@
 /**
  * Configuración centralizada para las APIs y WebSockets
+ * Utiliza variables de entorno con valores por defecto como respaldo
  */
 const API_CONFIG = {
-  BASE_URL: 'http://localhost:8080',
-  WS_URL: 'http://localhost:8080/ws',
-  GAME_URL: 'http://localhost:8080/game',
-  ROOMS_URL: 'http://localhost:8080/api/rooms',
-  PLAYERS_URL: 'http://localhost:8080/api/players',
+  BASE_URL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080',
 };
 
 export default API_CONFIG;
