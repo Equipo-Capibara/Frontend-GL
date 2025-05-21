@@ -15,8 +15,8 @@ class WebSocketService {
   }
 
   initialize() {
-    console.log('🔄 Inicializando WebSocket con URL:', API_CONFIG.WS_URL);
-    const socket = new SockJS(API_CONFIG.WS_URL);
+    console.log('🔄 Inicializando WebSocket con URL:', API_CONFIG.BASE_URL, "/ws");
+    const socket = new SockJS(`${API_CONFIG.BASE_URL}/ws`);
     this._stompClient = new Client({
       webSocketFactory: () => socket,
       debug: (str) => console.log('STOMP:', str),
