@@ -153,15 +153,15 @@ function GameBoard() {
   const transposedGrid = transposeGrid(rawGrid);
 
 
-  const getSpriteForCharacter = (characterId) => {
-    switch (characterId) {
-      case '1':
+  const getSpriteForCharacter = (element) => {
+    switch (element) {
+      case 'Flame':
         return '/resources/fire_character.png';
-      case '2':
+      case 'Aqua':
         return '/resources/water_character.png';
-      case '3':
+      case 'Brisa':
         return '/resources/wind_character.png';
-      case '4':
+      case 'Stone':
         return '/resources/stone_character.png';
       default:
         return '/resources/fire_character.png';
@@ -203,16 +203,16 @@ function GameBoard() {
           </div>
         ))}
 
-        {board.characters.map((char) => (
+        {board.characters.map((character) => (
           <img
-            key={char.id}
-            src={getSpriteForCharacter(char.character)}
-            alt={`Character ${char.id}`}
+            key={character.playerId}
+            src={getSpriteForCharacter(character.element)}
+            alt={`Character ${character.playerId}`}
             className="player-sprite"
             style={{
               width: tileSize,
               height: tileSize,
-              transform: `translate(${char.x * tileSize}px, ${char.y * tileSize}px)`,
+              transform: `translate(${character.x * tileSize}px, ${character.y * tileSize}px)`,
             }}
           />
         ))}
