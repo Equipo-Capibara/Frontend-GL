@@ -11,6 +11,7 @@ class ApiService {
       baseURL: baseUrl,
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
     });
 

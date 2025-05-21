@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Tile } from '../../components/game';
-import { gameService, playersService } from '../../services';
+import { gameService, playersService, websocketService } from '../../services';
 import '../../styles/gameBoard.css';
 
 const GameBoard = () => {
+  console.log("🚀 GameBoard está montando");
   const { roomCode } = useParams();
   const playerId = playersService.getCurrentPlayerId(); // Usa el servicio en lugar de localStorage
 
@@ -12,12 +13,20 @@ const GameBoard = () => {
   const [isMoving, setIsMoving] = useState(false);
   const boardRef = useRef();
 
+  const hasSubscribed = useRef(false);
+  const subscriptions = useRef([]);
+
   useEffect(() => {
     const fetchBoard = async () => {
       try {
         // Usamos el servicio de juego para obtener el estado
         console.log('Este es el roomCode en GameBoard: ', roomCode)
         const data = await gameService.getGameState(roomCode);
+        console.log(" ------- Tablero", data)
+        console.log("🧩 Board recibido:", data);
+        console.log("📐 Dimensiones: width =", data.width, ", height =", data.height);
+        console.log("📦 Boxes recibidos:", data.boxes);
+        console.log("🧍‍♂️ Characters:", data.characters);
         setBoard(data);
       } catch (error) {
         console.error('Error al obtener estado del juego:', error);
@@ -27,45 +36,71 @@ const GameBoard = () => {
     fetchBoard();
   }, [roomCode]);
 
+  // Suscripción al estado del juego
   useEffect(() => {
-    const handleKeyDown = async (e) => {
+    if (!roomCode || !playerId || hasSubscribed.current) return;
+
+    const subscribe = async () => {
+      try {
+        const callbacks = {
+          onGameStateUpdate: (gameState) => {
+            console.log('🟢 Estado inicial del juego recibido:', gameState);
+            setBoard(gameState);
+          },
+          onPlayerMoved: (updatedBoard) => {
+            console.log('🔄 Movimiento de jugador:', updatedBoard);
+            setBoard(updatedBoard);
+          },
+          onBlockBuilt: (updatedBoard) => {
+            console.log('🧱 Bloque construido:', updatedBoard);
+            setBoard(updatedBoard);
+          },
+          onBlockDestroyed: (updatedBoard) => {
+            console.log('💥 Bloque destruido:', updatedBoard);
+            setBoard(updatedBoard);
+          }
+        };
+
+        const subs = await gameService.subscribeToGame(roomCode, callbacks);
+        console.log('📊 Suscripciones creadas en GameBoard:', subs);
+        subscriptions.current = subs;
+        hasSubscribed.current = true;
+      } catch (error) {
+          console.error('❌ Error al suscribirse al juego:', error);
+      }
+    };
+
+    subscribe();
+
+    return () => {
+      subscriptions.current.forEach(sub =>
+        websocketService.unsubscribe(`/topic/game/${roomCode}/${sub.type}`)
+      );
+    };
+  }, [roomCode, playerId]);
+
+  // Manejo de teclas (movimiento, construir, destruir)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
       const key = e.key.toLowerCase();
 
       if (isMoving) return;
 
       if (['w', 'a', 's', 'd'].includes(key)) {
         setIsMoving(true);
-        try {
-          // Usamos el servicio de juego para mover al jugador
-          const updatedBoard = await gameService.movePlayer(roomCode, playerId, key);
-          setBoard(updatedBoard);
-        } catch (error) {
-          console.error('Error al mover el personaje:', error);
-        } finally {
-          setTimeout(() => setIsMoving(false), 80);
-        }
+        gameService.sendMove(roomCode, playerId, key);
+        setTimeout(() => setIsMoving(false), 80);
       } else if (key === 'z') {
-        try {
-          // Usamos el servicio de juego para construir un bloque
-          const updatedBoard = await gameService.buildBlock(roomCode, playerId);
-          setBoard(updatedBoard);
-        } catch (error) {
-          console.error('Error al construir el bloque:', error);
-        }
+        gameService.sendBuild(roomCode, playerId);
       } else if (key === 'x') {
-        try {
-          // Usamos el servicio de juego para destruir un bloque
-          const updatedBoard = await gameService.destroyBlock(roomCode, playerId);
-          setBoard(updatedBoard);
-        } catch (error) {
-          console.error('Error al destruir el bloque:', error);
-        }
+        gameService.sendDestroy(roomCode, playerId);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMoving, roomCode, playerId]);
+
 
   if (!board || !board.characters) return <p>Cargando...</p>;
 
@@ -74,6 +109,26 @@ const GameBoard = () => {
   const tileWidth = screenWidth / board.width;
   const tileHeight = screenHeight / board.height;
   const tileSize = Math.floor(Math.min(tileWidth, tileHeight));
+
+
+  const constructGridFromBoxes = (boxes, width, height) => {
+    console.log("📦 Generando grid desde boxes...");
+    const grid = Array.from({ length: width }, (_, x) =>
+      Array.from({ length: height }, (_, y) => {
+        return null;
+      })
+    );
+    boxes.forEach((box) => {
+      if (box.x == null || box.y == null) {
+        console.warn("⚠️ Box con coordenadas inválidas:", box);
+      }
+      grid[box.x][box.y] = box;
+    });
+    console.log("✅ Grid construido:", grid);
+    return grid;
+
+  };
+
 
   const transposeGrid = (grid) => {
     const height = grid[0].length;
@@ -91,7 +146,12 @@ const GameBoard = () => {
     return transposed;
   };
 
-  const transposedGrid = transposeGrid(board.grid);
+  const rawGrid = board.grid
+    ? board.grid
+    : constructGridFromBoxes(board.boxes, board.width, board.height);
+
+  const transposedGrid = transposeGrid(rawGrid);
+
 
   const getSpriteForCharacter = (characterId) => {
     switch (characterId) {
@@ -120,9 +180,26 @@ const GameBoard = () => {
       >
         {transposedGrid.map((row, rowIndex) => (
           <div className="board-row" key={rowIndex}>
-            {row.map((cell) => (
-              <Tile key={`${cell.x}-${cell.y}`} cell={cell} tileSize={tileSize} />
-            ))}
+            {row.map((cell, cellIndex) => {
+              if (!cell) {
+                console.warn(`🚨 Celda vacía en row ${rowIndex}, col ${cellIndex}`);
+                return (
+                  <Tile
+                    key={`empty-${rowIndex}-${cellIndex}`}
+                    cell={{ x: cellIndex, y: rowIndex, type: 'EMPTY' }} // fallback para celda vacía
+                    tileSize={tileSize}
+                  />
+                );
+              }
+
+              return (
+                <Tile
+                  key={`${cell.x}-${cell.y}`}
+                  cell={cell}
+                  tileSize={tileSize}
+                />
+              );
+            })}
           </div>
         ))}
 
@@ -142,6 +219,7 @@ const GameBoard = () => {
       </div>
     </div>
   );
+
 };
 
 export default GameBoard;

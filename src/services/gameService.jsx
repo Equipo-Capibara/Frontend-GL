@@ -1,7 +1,8 @@
+import websocketService from './websocketService';
 import apiService from './apiService';
 
 /**
- * Clase para gestionar las operaciones relacionadas con el juego.
+ * Servicio para manejar acciones del juego vía WebSocket.
  */
 class GameService {
   /**
@@ -11,7 +12,9 @@ class GameService {
    */
   async getGameState(roomCode) {
     try {
-      return await apiService.get('/game/state', { params: { roomCode: roomCode } });
+      const response = await apiService.get(`/api/game/${roomCode}/state`);
+      console.log('📦 Game state recibido:', response);
+      return response;
     } catch (error) {
       console.error('Error al obtener estado del juego:', error);
       throw new Error('Respuesta vacía o con error al obtener el estado del juego');
@@ -19,17 +22,67 @@ class GameService {
   }
 
   /**
+     * Se suscribe a los cambios del tablero del juego.
+     * @param {string} roomCode - Sala a observar.
+     * @param {Function} callbacks - Callback que recibe el BoardStateDto.
+     * @returns {Promise<string>} - ID de suscripción.
+     */
+    async subscribeToGame(roomCode, callbacks) {
+      const subs = [];
+
+      try {
+        // Suscripción a estado del juego
+        if (callbacks.onGameStateUpdate) {
+          const id = await websocketService.subscribe(
+            `/topic/game/${roomCode}/state`,
+            callbacks.onGameStateUpdate
+          );
+          subs.push({ type: 'state', id });
+        }
+
+        // Suscripción para movimiento del jugador
+        if (callbacks.onPlayerMoved) {
+          const id = await websocketService.subscribe(
+            `/topic/game/${roomCode}/player-moved`,
+            callbacks.onPlayerMoved
+          );
+          subs.push({ type: 'player-moved', id });
+        }
+
+        // Suscripción para construir bloques
+        if (callbacks.onBlockBuilt) {
+          const id = await websocketService.subscribe(
+            `/topic/game/${roomCode}/block-built`,
+            callbacks.onBlockBuilt
+          );
+          subs.push({ type: 'block-built', id });
+        }
+
+        // Suscripción para destruir bloques
+        if (callbacks.onBlockDestroyed) {
+          const id = await websocketService.subscribe(
+            `/topic/game/${roomCode}/block-destroyed`,
+            callbacks.onBlockDestroyed
+          );
+          subs.push({ type: 'block-destroyed', id });
+        }
+
+        return subs;
+      } catch (error) {
+        console.error('Error al suscribirse a estado del juego:', error);
+        throw error;
+      }
+    }
+
+  /**
    * Mueve al jugador en una dirección específica.
    * @param {string} roomCode - Código de la sala.
    * @param {string} playerId - ID del jugador.
    * @param {string} direction - Dirección del movimiento (w, a, s, d).
-   * @returns {Promise<Object>} - Objeto con el estado actualizado del juego.
    */
-  async movePlayer(roomCode, playerId, direction) {
+  async sendMove(roomCode, playerId, direction) {
     try {
-      return await apiService.post('/game/move', null, {
-        params: { roomCode, playerId, direction },
-      });
+      await websocketService.publish(`/app/game/${roomCode}/move`, { playerId, direction }); //json
     } catch (error) {
       console.error('Error en movimiento del jugador:', error);
       throw new Error('Error al mover al jugador');
@@ -37,21 +90,13 @@ class GameService {
   }
 
   /**
-   * Construye un bloque en una dirección específica.
+   * Construcción de bloques.
    * @param {string} roomCode - Código de la sala.
    * @param {string} playerId - ID del jugador.
-   * @param {string} direction - Dirección donde construir (opcional).
-   * @returns {Promise<Object>} - Objeto con el estado actualizado del juego.
    */
-  async buildBlock(roomCode, playerId, direction = null) {
+  async sendBuild(roomCode, playerId) {
     try {
-      const params = { roomCode, playerId };
-
-      if (direction) {
-        params.direction = direction;
-      }
-
-      return await apiService.post('/game/build', null, { params });
+      await websocketService.publish(`/app/game/${roomCode}/build`, { playerId });
     } catch (error) {
       console.error('Error al construir bloque:', error);
       throw new Error('Error al construir bloque');
@@ -62,13 +107,10 @@ class GameService {
    * Destruye un bloque.
    * @param {string} roomCode - Código de la sala.
    * @param {string} playerId - ID del jugador.
-   * @returns {Promise<Object>} - Objeto con el estado actualizado del juego.
    */
-  async destroyBlock(roomCode, playerId) {
+  async sendDestroy(roomCode, playerId) {
     try {
-      return await apiService.post('/game/destroy', null, {
-        params: { roomCode, playerId },
-      });
+      await websocketService.publish(`/app/game/${roomCode}/destroy`, { playerId });
     } catch (error) {
       console.error('Error al destruir bloque:', error);
       throw new Error('Error al destruir bloque');
