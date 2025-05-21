@@ -1,0 +1,172 @@
+/* Contenedor de la sala */
+.room-container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    color: white;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+
+.player-slot.selector-slot {
+    max-width: 250px;  /* Ajusta esto según el tamaño de las tarjetas */
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra la tarjeta dentro del contenedor */
+    justify-content: center;
+}
+
+.character-selection {
+    display: flex;
+    justify-content: center;
+    align-items: stretch; /* Hace que todas las tarjetas tengan el mismo alto */
+    gap: 20px; /* Espacio entre tarjetas */
+}
+
+.character-card, .character-card.empty-slot {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribuye el contenido equitativamente */
+    align-items: center;
+    text-align: center;
+    width: 250px; /* Ajusta según el diseño */
+    height: 400px; /* Fija una altura */
+    box-sizing: border-box;
+}
+
+/* Para el jugador actual (interactiva) */
+.player-slot.current-player {
+    border: 2px solid #00c853;
+    box-shadow: 0 0 10px #00c853aa;
+}
+
+/* Para slots vacíos */
+.player-slot.empty {
+    border: 2px dashed white;
+    justify-content: center;
+    align-items: center;
+}
+
+.slot-placeholder {
+    font-size: 1rem;
+    opacity: 0.6;
+}
+
+/* Tarjeta pasiva de otro jugador */
+.character-card h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.character-name {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+/* Parte de navegación en tarjeta propia */
+.selector-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.selector-slot .navigation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.selector-slot .navigation-buttons button {
+    background-color: #ffffffaa;
+    color: black;
+    border: none;
+    border-radius: 6px;
+    padding: 0.3rem 0.6rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Footer */
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.confirm-button {
+    background-color: #bf6900;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.start-button {
+    background-color: #ccc;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.start-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.player-count {
+    margin-right: 20px;
+    color: white;
+    font-weight: bold;
+    font-size: 25px;
+}
+
+/* Alertas */
+.alerts-container {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.alert {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-10px); }
+    20% { opacity: 1; transform: translateY(0); }
+    80% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-10px); }
+}
+
+.ready-label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #00ffcc;
+    text-align: center;
+}

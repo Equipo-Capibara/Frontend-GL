@@ -1,0 +1,18 @@
+.tile-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill; /* Llena el espacio sin cortarse */
+    transition: transform 0.1s ease-in-out;
+}
+.tile-content-key {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60%;
+    height: 60%;
+    margin: 20% 20%;
+    object-fit: fill; /* Llena el espacio sin cortarse */
+}
