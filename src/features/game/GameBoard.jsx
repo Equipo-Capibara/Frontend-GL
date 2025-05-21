@@ -156,15 +156,15 @@ function GameBoard() {
   const getSpriteForCharacter = (element) => {
     switch (element) {
       case 'Flame':
-        return '/resources/fire_character.png';
+        return '/resources/flame_character.png';
       case 'Aqua':
-        return '/resources/water_character.png';
+        return '/resources/aqua_character.png';
       case 'Brisa':
-        return '/resources/wind_character.png';
+        return '/resources/brisa_character.png';
       case 'Stone':
         return '/resources/stone_character.png';
       default:
-        return '/resources/fire_character.png';
+        return '/resources/flame_character.png';
     }
   };
 
