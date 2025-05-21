@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { websocketService, roomsService, playersService } from '../../services';
 import { CharacterCard } from '../../components/common';
 import '../../styles/roomScreen.css';
@@ -40,6 +40,7 @@ const characters = [
 ];
 
 export default function RoomScreen() {
+  const navigate = useNavigate();
   const { roomCode } = useParams();
   const [currentCharacterIndex, setCurrentCharacterIndex] = useState(0);
   const [selectedCharacters, setSelectedCharacters] = useState([]);
@@ -112,7 +113,7 @@ export default function RoomScreen() {
             }
 
             // Redirigimos a la pantalla de juego
-            window.location.href = `/game/${roomCode}`;
+            navigate(`/game/${roomCode}`);
           }
         };
 
