@@ -1,9 +1,8 @@
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
-import Home from './features/home/Home';
-import Register from './features/auth/Register';
+import { Home } from './features/home';
+import { Register, RegisterCode } from './features/auth';
 import { NavBar } from './components/ui';
-import RoomScreen from './features/room/RoomScreen';
-import RegisterCode from './features/auth/RegisterCode';
+import { RoomScreen } from './features/room';
 import { GameBoard } from './features/game';
 import { WebSocketProvider } from './context/WebSocketContext';
 import './styles/app.css';

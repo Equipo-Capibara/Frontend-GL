@@ -4,7 +4,7 @@ import { Tile } from '../../components/game';
 import { gameService, playersService, websocketService } from '../../services';
 import '../../styles/gameBoard.css';
 
-const GameBoard = () => {
+function GameBoard() {
   console.log("🚀 GameBoard está montando");
   const { roomCode } = useParams();
   const playerId = playersService.getCurrentPlayerId(); // Usa el servicio en lugar de localStorage
