@@ -19,7 +19,7 @@ const Tile = ({ cell, tileSize, playerPos }) => {
     <div className="tile" style={style}>
       {cell.block && <Block type={cell.block.type} />}
       {cell.character && !isPlayerHere && <Character element={cell.character.element} />}
-      {cell.key && <Key />}
+      {cell.key && <Key type={cell.key.keyType} />}
       {cell.door && <Door locked={cell.door.locked} />}
     </div>
   );

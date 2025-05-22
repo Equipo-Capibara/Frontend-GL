@@ -67,6 +67,15 @@ class GameService {
           subs.push({ type: 'block-destroyed', id });
         }
 
+        // Suscripción para ganar
+        if (callbacks.onGameComplete) {
+          const id = await websocketService.subscribe(
+            `/topic/game/${roomCode}/complete`,
+            callbacks.onGameComplete
+          );
+          subs.push({ type: 'complete', id });
+        }
+
         return subs;
       } catch (error) {
         console.error('Error al suscribirse a estado del juego:', error);
