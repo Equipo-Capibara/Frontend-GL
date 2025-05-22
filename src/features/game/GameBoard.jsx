@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Tile } from '../../components/game';
 import { gameService, playersService, websocketService } from '../../services';
 import '../../styles/gameBoard.css';
 
 function GameBoard() {
+  const navigate = useNavigate();
   console.log("🚀 GameBoard está montando");
   const { roomCode } = useParams();
   const playerId = playersService.getCurrentPlayerId(); // Usa el servicio en lugar de localStorage
@@ -58,6 +59,10 @@ function GameBoard() {
           onBlockDestroyed: (updatedBoard) => {
             console.log('💥 Bloque destruido:', updatedBoard);
             setBoard(updatedBoard);
+          },
+          onGameComplete: (gameState) => {
+            alert("Ganaron, felicidades");
+            navigate("/home");
           }
         };
 
@@ -182,7 +187,7 @@ function GameBoard() {
           <div className="board-row" key={rowIndex}>
             {row.map((cell, cellIndex) => {
               if (!cell) {
-                console.warn(`🚨 Celda vacía en row ${rowIndex}, col ${cellIndex}`);
+                // console.warn(`🚨 Celda vacía en row ${rowIndex}, col ${cellIndex}`);
                 return (
                   <Tile
                     key={`empty-${rowIndex}-${cellIndex}`}
